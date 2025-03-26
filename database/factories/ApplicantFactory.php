@@ -40,6 +40,7 @@ class ApplicantFactory extends Factory
             'medical_conditions' => fake()->text(),
             'injuries' => fake()->text(),
             'additional_info' => fake()->text(),
+            'player_id' => fake()->word(),
         ];
     }
 }

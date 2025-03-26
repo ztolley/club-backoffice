@@ -35,6 +35,7 @@ class Applicant extends Model
         'medical_conditions',
         'injuries',
         'additional_info',
+        'player_id',
     ];
 
     /**
@@ -50,5 +51,10 @@ class Applicant extends Model
     public function player(): HasOne
     {
         return $this->hasOne(Player::class);
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return "{$this->first_name} {$this->last_name}";
     }
 }

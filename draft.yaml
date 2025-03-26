@@ -19,6 +19,7 @@ models:
     medical_conditions: longtext nullable
     injuries: longtext nullable
     additional_info: longtext nullable
+    player_id: Player nullable
     relationships:
       hasOne: Player
 
