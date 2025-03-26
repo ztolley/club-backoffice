@@ -26,7 +26,8 @@ class PlayerResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')->required(),
-                TextInput::make('address')->required(),
+                TextInput::make('address')
+                    ->required(),
                 TextInput::make('email')
                     ->label('Email Address')
                     ->email()

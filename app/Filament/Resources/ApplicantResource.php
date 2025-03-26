@@ -24,7 +24,8 @@ class ApplicantResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')->required(),
-                TextInput::make('address')->required(),
+                Textarea::make('address')
+                    ->required(),
                 TextInput::make('email')
                     ->label('Email Address')
                     ->email()
