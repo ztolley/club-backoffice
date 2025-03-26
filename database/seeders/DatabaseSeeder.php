@@ -2,9 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Applicant;
+use App\Models\Player;
+use App\Models\Team;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,9 +18,15 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        // Create a default admin user
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('password123'), // Use a hashed password
         ]);
+
+        Applicant::factory(10)->create();
+        Team::factory(2)->create();
+        Player::factory(5)->create();
     }
 }

@@ -32,7 +32,7 @@ return new class extends Migration
             $table->longText('medical_conditions')->nullable();
             $table->longText('injuries')->nullable();
             $table->longText('additional_info')->nullable();
-            $table->string('player_id')->nullable();
+            $table->foreignId('player_id')->nullable();
             $table->timestamps();
         });
     }

@@ -2,9 +2,9 @@ created:
     - database/factories/ApplicantFactory.php
     - database/factories/TeamFactory.php
     - database/factories/PlayerFactory.php
-    - database/migrations/2025_03_26_125941_create_applicants_table.php
-    - database/migrations/2025_03_26_125942_create_teams_table.php
-    - database/migrations/2025_03_26_125943_create_players_table.php
+    - database/migrations/2025_03_26_155550_create_applicants_table.php
+    - database/migrations/2025_03_26_155551_create_teams_table.php
+    - database/migrations/2025_03_26_155552_create_players_table.php
     - app/Models/Applicant.php
     - app/Models/Team.php
     - app/Models/Player.php

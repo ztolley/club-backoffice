@@ -32,7 +32,7 @@ return new class extends Migration
             $table->boolean('agreed_parent_code');
             $table->date('signed_date')->nullable();
             $table->foreignId('team_id')->nullable();
-            $table->string('applicant_id')->nullable();
+            $table->foreignId('applicant_id')->nullable();
             $table->timestamps();
         });
     }

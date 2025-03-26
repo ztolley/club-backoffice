@@ -12,34 +12,6 @@ class Player extends Model
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'first_name',
-        'last_name',
-        'parent_carer_names',
-        'address',
-        'postal_code',
-        'primary_email',
-        'primary_phone',
-        'dob',
-        'preferred_position',
-        'other_positions',
-        'medical_conditions',
-        'injuries',
-        'additional_info',
-        'allowed_marketing',
-        'allowed_photography',
-        'agreed_player_code',
-        'agreed_parent_code',
-        'signed_date',
-        'team_id',
-        'applicant_id',
-    ];
-
-    /**
      * The attributes that should be cast to native types.
      *
      * @var array
