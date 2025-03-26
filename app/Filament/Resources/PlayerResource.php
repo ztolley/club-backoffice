@@ -28,17 +28,26 @@ class PlayerResource extends Resource
                 TextInput::make('first_name')->required(),
                 TextInput::make('last_name')->required(),
                 Textarea::make('parent_carer_names')
+                    ->label('Parent/Carer Names')
                     ->required()
                     ->columnSpanFull(),
                 TextInput::make('address')->required(),
-                TextInput::make('postal_code')->required(),
+                TextInput::make('postal_code')
+                    ->label('Post Code')
+                    ->required(),
                 TextInput::make('primary_email')
+                    ->label('Email Address')
                     ->email()
                     ->required(),
                 TextInput::make('primary_phone')
+                    ->label('Phone Number')
                     ->tel()
                     ->required(),
-                DatePicker::make('dob')->required(),
+                DatePicker::make('dob')
+                    ->label('Date of Birth')
+                    ->maxDate(now())
+                    ->required(),
+
                 TextInput::make('preferred_position'),
                 TextInput::make('other_positions'),
                 Textarea::make('medical_conditions')->columnSpanFull(),
@@ -47,14 +56,20 @@ class PlayerResource extends Resource
 
                 Toggle::make('allowed_marketing')->required(),
                 Toggle::make('allowed_photography')->required(),
-                Toggle::make('agreed_player_code')->required(),
-                Toggle::make('agreed_parent_code')->required(),
+
+                Toggle::make('agreed_player_code')
+                    ->label('Agreed to Player Code of Conduct')
+                    ->required(),
+                Toggle::make('agreed_parent_code')
+                    ->label('Agreed to Parent Code of Conduct')
+                    ->required(),
 
                 Select::make('team_id')->relationship('team', 'name'),
+
                 DatePicker::make('signed_date'),
 
                 Select::make('applicant_id')
-                    ->relationship('applicant', 'id') // just use the key field here
+                    ->relationship('applicant', 'id')
                     ->getOptionLabelFromRecordUsing(fn($record) => "{$record->first_name} {$record->last_name}")
                     ->searchable()
                     ->preload()
@@ -68,13 +83,16 @@ class PlayerResource extends Resource
             ->columns([
                 TextColumn::make('full_name')->searchable(),
                 TextColumn::make('primary_email')->searchable(),
-                TextColumn::make('postal_code')->searchable(),
+                TextColumn::make('postal_code')
+                    ->label('Post Code')
+                    ->searchable(),
                 TextColumn::make('dob')
+                    ->label('DOB')
                     ->date()
                     ->sortable(),
                 TextColumn::make('preferred_position')->searchable(),
                 TextColumn::make('team.name')
-                    ->numeric()
+                    ->searchable()
                     ->sortable(),
             ])
             ->filters([

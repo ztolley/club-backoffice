@@ -6,6 +6,9 @@ use App\Filament\Resources\ApplicantResource\Pages;
 use App\Models\Applicant;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextArea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions;
 use Filament\Tables\Columns\TextColumn;
@@ -21,40 +24,38 @@ class ApplicantResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('first_name')
+                TextInput::make('first_name')->required(),
+                TextInput::make('last_name')->required(),
+                TextInput::make('address')->required(),
+                TextInput::make('postal_code')
+                    ->label('Post Code')
                     ->required(),
-                Forms\Components\TextInput::make('last_name')
-                    ->required(),
-                Forms\Components\TextInput::make('address')
-                    ->required(),
-                Forms\Components\TextInput::make('postal_code')
-                    ->required(),
-                Forms\Components\TextInput::make('email')
+                TextInput::make('email')
+                    ->label('Email Address')
                     ->email()
                     ->required(),
-                Forms\Components\TextInput::make('phone')
+                TextInput::make('phone')
+                    ->label('Phone Number')
                     ->tel()
                     ->required(),
-                Forms\Components\DatePicker::make('dob')
+                DatePicker::make('dob')
+                    ->label('Date of Birth')
+                    ->maxDate(now())
                     ->required(),
-                Forms\Components\TextInput::make('school'),
-                Forms\Components\TextInput::make('saturday_club'),
-                Forms\Components\TextInput::make('sunday_club'),
-                Forms\Components\Textarea::make('previous_clubs')
+                TextInput::make('school'),
+                TextInput::make('saturday_club'),
+                TextInput::make('sunday_club'),
+                Textarea::make('previous_clubs')->columnSpanFull(),
+                Textarea::make('playing_experience')->columnSpanFull(),
+                TextInput::make('preferred_position'),
+                TextInput::make('other_positions'),
+                TextInput::make('age_groups'),
+                Textarea::make('how_hear')
+                    ->label('How did you hear about us?')
                     ->columnSpanFull(),
-                Forms\Components\Textarea::make('playing_experience')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('preferred_position'),
-                Forms\Components\TextInput::make('other_positions'),
-                Forms\Components\TextInput::make('age_groups'),
-                Forms\Components\Textarea::make('how_hear')
-                    ->columnSpanFull(),
-                Forms\Components\Textarea::make('medical_conditions')
-                    ->columnSpanFull(),
-                Forms\Components\Textarea::make('injuries')
-                    ->columnSpanFull(),
-                Forms\Components\Textarea::make('additional_info')
-                    ->columnSpanFull(),
+                Textarea::make('medical_conditions')->columnSpanFull(),
+                Textarea::make('injuries')->columnSpanFull(),
+                Textarea::make('additional_info')->columnSpanFull(),
             ]);
     }
 
@@ -64,9 +65,11 @@ class ApplicantResource extends Resource
             ->columns([
                 TextColumn::make('full_name')->searchable(),
                 TextColumn::make('email')->searchable(),
-                TextColumn::make('postal_code')->searchable(),
-                TextColumn::make('phone')->searchable(),
+                TextColumn::make('postal_code')
+                    ->label('Post Code')
+                    ->searchable(),
                 TextColumn::make('dob')
+                    ->label('DOB')
                     ->date()
                     ->sortable(),
                 TextColumn::make('preferred_position')->searchable(),
