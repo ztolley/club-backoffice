@@ -20,7 +20,7 @@ models:
     injuries: longtext nullable
     additional_info: longtext nullable
     relationships:
-      hasOne: Player nullable
+      hasOne: Player
 
   Team:
     name: string
@@ -47,6 +47,7 @@ models:
     agreed_parent_code: boolean
     signed_date: date nullable
     team_id: Team nullable
+    applicant_id: Applicant nullable
     relationships:
-      hasOne: Applicant nullable
+      hasOne: Applicant
       belongsTo: Team
