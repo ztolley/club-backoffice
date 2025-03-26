@@ -81,15 +81,16 @@ class PlayerResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('full_name')->searchable(),
+                TextColumn::make('full_name')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('primary_email')->searchable(),
                 TextColumn::make('postal_code')
                     ->label('Post Code')
                     ->searchable(),
                 TextColumn::make('dob')
                     ->label('DOB')
-                    ->date()
-                    ->sortable(),
+                    ->date(),
                 TextColumn::make('preferred_position')->searchable(),
                 TextColumn::make('team.name')
                     ->searchable()
