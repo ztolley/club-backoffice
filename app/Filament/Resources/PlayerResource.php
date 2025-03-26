@@ -25,21 +25,13 @@ class PlayerResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('first_name')->required(),
-                TextInput::make('last_name')->required(),
-                Textarea::make('parent_carer_names')
-                    ->label('Parent/Carer Names')
-                    ->required()
-                    ->columnSpanFull(),
+                TextInput::make('name')->required(),
                 TextInput::make('address')->required(),
-                TextInput::make('postal_code')
-                    ->label('Post Code')
-                    ->required(),
-                TextInput::make('primary_email')
+                TextInput::make('email')
                     ->label('Email Address')
                     ->email()
                     ->required(),
-                TextInput::make('primary_phone')
+                TextInput::make('phone')
                     ->label('Phone Number')
                     ->tel()
                     ->required(),
@@ -47,6 +39,10 @@ class PlayerResource extends Resource
                     ->label('Date of Birth')
                     ->maxDate(now())
                     ->required(),
+                Textarea::make('parent_carer_names')
+                    ->label('Parent/Carer Names')
+                    ->required()
+                    ->columnSpanFull(),
 
                 TextInput::make('preferred_position'),
                 TextInput::make('other_positions'),
@@ -81,13 +77,10 @@ class PlayerResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('full_name')
+                TextColumn::make('name')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('primary_email')->searchable(),
-                TextColumn::make('postal_code')
-                    ->label('Post Code')
-                    ->searchable(),
+                TextColumn::make('email')->searchable(),
                 TextColumn::make('dob')
                     ->label('DOB')
                     ->date(),

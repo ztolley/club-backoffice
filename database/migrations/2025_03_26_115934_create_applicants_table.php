@@ -7,16 +7,14 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Run the migrations.P
      */
     public function up(): void
     {
         Schema::create('applicants', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('name');
             $table->string('address');
-            $table->string('postal_code');
             $table->string('email');
             $table->string('phone');
             $table->date('dob');

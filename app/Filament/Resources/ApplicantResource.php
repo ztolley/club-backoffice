@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ApplicantResource\Pages;
 use App\Models\Applicant;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextArea;
@@ -24,12 +23,8 @@ class ApplicantResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('first_name')->required(),
-                TextInput::make('last_name')->required(),
+                TextInput::make('name')->required(),
                 TextInput::make('address')->required(),
-                TextInput::make('postal_code')
-                    ->label('Post Code')
-                    ->required(),
                 TextInput::make('email')
                     ->label('Email Address')
                     ->email()
@@ -63,11 +58,8 @@ class ApplicantResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('full_name')->searchable(),
+                TextColumn::make('name')->searchable(),
                 TextColumn::make('email')->searchable(),
-                TextColumn::make('postal_code')
-                    ->label('Post Code')
-                    ->searchable(),
                 TextColumn::make('dob')
                     ->label('DOB')
                     ->date()

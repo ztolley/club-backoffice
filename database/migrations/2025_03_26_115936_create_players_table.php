@@ -13,14 +13,12 @@ return new class extends Migration
     {
         Schema::create('players', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->longText('parent_carer_names');
+            $table->string('name');
             $table->string('address');
-            $table->string('postal_code');
-            $table->string('primary_email');
-            $table->string('primary_phone');
+            $table->string('email');
+            $table->string('phone');
             $table->date('dob');
+            $table->longText('parent_carer_names');
             $table->string('preferred_position')->nullable();
             $table->string('other_positions')->nullable();
             $table->longText('medical_conditions')->nullable();

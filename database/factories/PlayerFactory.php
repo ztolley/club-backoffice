@@ -22,14 +22,12 @@ class PlayerFactory extends Factory
     public function definition(): array
     {
         return [
-            'first_name' => fake()->firstName(),
-            'last_name' => fake()->lastName(),
-            'parent_carer_names' => fake()->text(),
-            'address' => fake()->word(),
-            'postal_code' => fake()->postcode(),
-            'primary_email' => fake()->word(),
-            'primary_phone' => fake()->word(),
+            'name' => fake()->name(),
+            'address' => fake()->address(),
+            'email' => fake()->safeEmail(),
+            'phone' => fake()->phoneNumber(),
             'dob' => fake()->date(),
+            'parent_carer_names' => fake()->name(),
             'preferred_position' => fake()->word(),
             'other_positions' => fake()->word(),
             'medical_conditions' => fake()->text(),

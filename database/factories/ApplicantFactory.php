@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\Applicant;
 
 class ApplicantFactory extends Factory
@@ -21,10 +20,8 @@ class ApplicantFactory extends Factory
     public function definition(): array
     {
         return [
-            'first_name' => fake()->firstName(),
-            'last_name' => fake()->lastName(),
-            'address' => fake()->word(),
-            'postal_code' => fake()->postcode(),
+            'name' => fake()->name(),
+            'address' => fake()->address(),
             'email' => fake()->safeEmail(),
             'phone' => fake()->phoneNumber(),
             'dob' => fake()->date(),
