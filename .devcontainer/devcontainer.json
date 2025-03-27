@@ -1,0 +1,27 @@
+{
+    "name": "Laravel Dev",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/var/www/html",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "php.validate.executablePath": "/usr/local/bin/php",
+                "editor.formatOnSave": true
+            },
+            "extensions": [
+                "bmewburn.vscode-intelephense-client",
+                "editorconfig.editorconfig",
+                "esbenp.prettier-vscode",
+                "laravel.vscode-laravel",
+                "naumovs.color-highlight",
+                "onecentlin.laravel-blade",
+                "shufo.vscode-blade-formatter",
+                "xdebug.php-debug"
+            ]
+        }
+    },
+    "forwardPorts": [8000],
+    "postCreateCommand": "composer install && php artisan key:generate",
+    "remoteUser": "root"
+}
