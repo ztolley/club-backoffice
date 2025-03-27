@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\Player;
 use App\Models\Team;
 
@@ -38,8 +37,7 @@ class PlayerFactory extends Factory
             'agreed_player_code' => fake()->boolean(),
             'agreed_parent_code' => fake()->boolean(),
             'signed_date' => fake()->date(),
-            'team_id' => Team::factory(),
-            'applicant_id' => fake()->word(),
+            'team_id' => Team::factory()
         ];
     }
 }

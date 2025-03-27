@@ -36,8 +36,7 @@ class ApplicantFactory extends Factory
             'how_hear' => fake()->text(),
             'medical_conditions' => fake()->text(),
             'injuries' => fake()->text(),
-            'additional_info' => fake()->text(),
-            'player_id' => fake()->word(),
+            'additional_info' => fake()->text()
         ];
     }
 }
