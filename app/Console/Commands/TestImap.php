@@ -71,7 +71,7 @@ class TestImap extends Command
                 continue;
             }
 
-            \App\Models\Applicant::create([
+            $applicant = \App\Models\Applicant::create([
                 'name' => $fields['name'],
                 'address' => $fields['address_postcode'],
                 'email' => $email,
@@ -91,8 +91,10 @@ class TestImap extends Command
                 'additional_info' => $fields['additional_comments'],
             ]);
 
-            // Optionally mark as seen
-            $message->setFlag('Seen');
+            dd($applicant);
+
+            // Log that the record was processed to the console
+            $this->info("Processed: $applicant");
         }
 
         $client->disconnect();
