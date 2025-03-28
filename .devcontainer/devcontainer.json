@@ -11,6 +11,7 @@
             },
             "extensions": [
                 "bmewburn.vscode-intelephense-client",
+                "cweijan.vscode-mysql-client2",
                 "editorconfig.editorconfig",
                 "esbenp.prettier-vscode",
                 "laravel.vscode-laravel",
