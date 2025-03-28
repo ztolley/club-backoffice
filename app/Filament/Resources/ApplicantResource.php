@@ -52,6 +52,7 @@ class ApplicantResource extends Resource
                 Textarea::make('medical_conditions')->columnSpanFull(),
                 Textarea::make('injuries')->columnSpanFull(),
                 Textarea::make('additional_info')->columnSpanFull(),
+                Textarea::make('notes')->columnSpanFull(),
             ]);
     }
 
@@ -59,17 +60,20 @@ class ApplicantResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->searchable(),
-                TextColumn::make('email')->searchable(),
+                TextColumn::make('name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('email')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('dob')
                     ->label('DOB')
                     ->date()
                     ->sortable(),
                 TextColumn::make('preferred_position')->searchable(),
-                TextColumn::make('age_groups')->searchable(),
-            ])
-            ->filters([
-                //
+                TextColumn::make('age_groups')
+                    ->sortable()
+                    ->searchable(),
             ])
             ->actions([
                 Actions\EditAction::make(),
@@ -78,7 +82,8 @@ class ApplicantResource extends Resource
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('name', 'asc');
     }
 
     public static function getRelations(): array

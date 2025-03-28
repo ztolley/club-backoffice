@@ -2,9 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Applicant;
-use App\Models\Player;
-use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -25,8 +22,10 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password123'), // Use a hashed password
         ]);
 
+        /*
         Applicant::factory(10)->create();
         Team::factory(2)->create();
         Player::factory(5)->create();
+        */
     }
 }

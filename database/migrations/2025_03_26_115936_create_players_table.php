@@ -24,6 +24,7 @@ return new class extends Migration
             $table->longText('medical_conditions')->nullable();
             $table->longText('injuries')->nullable();
             $table->longText('additional_info')->nullable();
+            $table->longText('notes')->nullable();
             $table->boolean('allowed_marketing');
             $table->boolean('allowed_photography');
             $table->boolean('agreed_player_code');

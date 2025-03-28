@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('applicants', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('address');
+            $table->string('address')->nullable();
             $table->string('email');
-            $table->string('phone');
-            $table->date('dob');
+            $table->string('phone')->nullable();
+            $table->date('dob')->nullable();
             $table->string('school')->nullable();
             $table->string('saturday_club')->nullable();
             $table->string('sunday_club')->nullable();
@@ -30,6 +30,7 @@ return new class extends Migration
             $table->longText('medical_conditions')->nullable();
             $table->longText('injuries')->nullable();
             $table->longText('additional_info')->nullable();
+            $table->longText('notes')->nullable();
             $table->foreignId('player_id')->nullable();
             $table->timestamps();
         });

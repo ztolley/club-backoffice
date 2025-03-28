@@ -50,6 +50,7 @@ class PlayerResource extends Resource
                 Textarea::make('medical_conditions')->columnSpanFull(),
                 Textarea::make('injuries')->columnSpanFull(),
                 Textarea::make('additional_info')->columnSpanFull(),
+                Textarea::make('notes')->columnSpanFull(),
 
                 Toggle::make('allowed_marketing')->required(),
                 Toggle::make('allowed_photography')->required(),
@@ -90,9 +91,6 @@ class PlayerResource extends Resource
                     ->searchable()
                     ->sortable(),
             ])
-            ->filters([
-                //
-            ])
             ->actions([
                 Actions\EditAction::make(),
             ])
@@ -100,7 +98,8 @@ class PlayerResource extends Resource
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('name', 'asc');;
     }
 
     public static function getRelations(): array
