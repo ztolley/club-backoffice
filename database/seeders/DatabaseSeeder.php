@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,10 +23,10 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password123'), // Use a hashed password
         ]);
 
-        /*
-        Applicant::factory(10)->create();
-        Team::factory(2)->create();
-        Player::factory(5)->create();
-        */
+        Role::firstOrCreate(['name' => 'super_admin']);
+        Role::firstOrCreate(['name' => 'coach']);
+
+        $user = User::find(1);
+        $user->assignRole('super_admin');
     }
 }
