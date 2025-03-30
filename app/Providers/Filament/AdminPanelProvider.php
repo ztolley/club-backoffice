@@ -27,7 +27,8 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
+            ->homeUrl('/')
+            ->path('/')
             ->login()
             ->colors([
                 'primary' => Color::Pink,
@@ -46,10 +47,7 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\FilamentInfoWidget::class,
             ])
             ->plugin(FilamentShieldPlugin::make())
-            ->plugin(
-                BreezyCore::make()
-                    ->myProfile()
-            )
+            ->plugin(BreezyCore::make()->myProfile())
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
