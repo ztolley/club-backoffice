@@ -10,6 +10,15 @@ class RolePolicy
 {
     use HandlesAuthorization;
 
+    public function before(\App\Models\User $user, $ability): bool|null
+    {
+        if ($user->hasRole('super_admin')) {
+            return true;
+        }
+
+        return null; // Let other policy methods handle it
+    }
+
     /**
      * Determine whether the user can view any models.
      */
