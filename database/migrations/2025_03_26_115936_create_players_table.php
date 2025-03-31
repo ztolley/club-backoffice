@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('players', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('address');
             $table->string('email');
@@ -30,8 +30,10 @@ return new class extends Migration
             $table->boolean('agreed_player_code');
             $table->boolean('agreed_parent_code');
             $table->date('signed_date')->nullable();
-            $table->foreignId('team_id')->nullable();
-            $table->foreignId('applicant_id')->nullable();
+            $table->uuid('team_id')->nullable();
+            $table->foreign('team_id')->references('id')->on('teams');
+            $table->uuid('applicant_id')->nullable();
+            $table->foreign('applicant_id')->references('id')->on('applicants');
             $table->timestamps();
         });
     }

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('applicants', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('address')->nullable();
             $table->string('email');
@@ -31,7 +31,6 @@ return new class extends Migration
             $table->longText('injuries')->nullable();
             $table->longText('additional_info')->nullable();
             $table->longText('notes')->nullable();
-            $table->foreignId('player_id')->nullable();
             $table->timestamps();
         });
     }

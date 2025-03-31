@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+use App\Traits\HasUuid;
+
 class Applicant extends Model
 {
     use HasFactory;
+    use HasUuid;
 
     /**
      * The attributes that should be cast to native types.
@@ -16,9 +19,7 @@ class Applicant extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'integer',
-        'dob' => 'date',
-        'player_id' => 'integer',
+        'dob' => 'date'
     ];
 
     public function player(): HasOne
