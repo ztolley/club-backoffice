@@ -52,6 +52,9 @@ class ApplicantResource extends Resource
                 Textarea::make('medical_conditions')->columnSpanFull(),
                 Textarea::make('injuries')->columnSpanFull(),
                 Textarea::make('additional_info')->columnSpanFull(),
+                DatePicker::make('application_date')
+                    ->label('Application Date')
+                    ->default(now()),
                 Textarea::make('notes')->columnSpanFull(),
             ]);
     }

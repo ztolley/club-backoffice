@@ -31,6 +31,7 @@ return new class extends Migration
             $table->longText('injuries')->nullable();
             $table->longText('additional_info')->nullable();
             $table->longText('notes')->nullable();
+            $table->date('application_date');
             $table->timestamps();
         });
     }

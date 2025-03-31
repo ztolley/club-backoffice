@@ -70,6 +70,7 @@ class ApplicantIngest extends Command
      */
     protected function processMessage($message)
     {
+        $receivedDate = $message->getDate();
         $html = $message->getHTMLBody();
         $fields = $this->parseApplicantFields($html);
 
@@ -85,6 +86,7 @@ class ApplicantIngest extends Command
         }
 
         $data = $this->mapFieldsToApplicant($fields);
+        $data['application_date'] = \Carbon\Carbon::parse($message->getDate());
 
         if (empty($data['name']) || empty($data['email'])) {
             $this->warn("Missing required fields for email: $email");
