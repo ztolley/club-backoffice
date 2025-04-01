@@ -15,6 +15,7 @@ class EditApplicant extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            /*
             Actions\Action::make('rejectApplication')
                 ->label('Reject Application')
                 ->modalHeading('Reject Application')
@@ -50,7 +51,6 @@ class EditApplicant extends EditRecord
                         ->body('The application has been notified by email.')
                         ->send();
                 }),
-
             Actions\Action::make('addPlayerToClub')
                 ->label('Add Player to Club')
                 ->modalHeading('Add Player to Club')
@@ -64,6 +64,7 @@ class EditApplicant extends EditRecord
                     ]));
                 }),
 
+            */
             Actions\DeleteAction::make()->color('danger'),
         ];
     }
