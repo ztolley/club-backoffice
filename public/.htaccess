@@ -3,6 +3,7 @@
         Options -MultiViews -Indexes
     </IfModule>
 
+    RewriteBase /
     RewriteEngine On
 
     # Handle Authorization Header
@@ -22,4 +23,7 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+
+    # Add an environment variable to tell Laravel to use a production environment
+    SetEnv LARAVEL_ENV production
 </IfModule>
