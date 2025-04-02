@@ -30,7 +30,7 @@ class Player extends Model
 
     public function applicant(): HasOne
     {
-        return $this->hasOne(Applicant::class);
+        return $this->hasOne(Applicant::class, 'player_id');
     }
 
     public function team(): BelongsTo

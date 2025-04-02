@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 use App\Traits\HasUuid;
 
@@ -22,8 +22,8 @@ class Applicant extends Model
         'dob' => 'date'
     ];
 
-    public function player(): HasOne
+    public function player(): BelongsTo
     {
-        return $this->hasOne(Player::class);
+        return $this->belongsTo(Player::class, 'player_id');
     }
 }
