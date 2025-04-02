@@ -40,6 +40,10 @@ class PlayerResource extends Resource
                     ->label('Date of Birth')
                     ->maxDate(now())
                     ->required(),
+                TextInput::make('fan')
+                    ->label('FAN')
+                    ->numeric()
+                    ->required(),
                 Textarea::make('parent_carer_names')
                     ->label('Parent/Carer Names')
                     ->required()
