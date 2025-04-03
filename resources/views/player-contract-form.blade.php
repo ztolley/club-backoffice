@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&amp;display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/contract.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/public.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 </head>
 
@@ -22,15 +22,6 @@
     <div class="container">
         {!! $playerPromise !!}
 
-        <p>If I do not follow this code, I understand my actions may result in:</p>
-
-        <ul class="wp-block-list">
-            <li>Being asked to apologise for any behaviour not fitting in with the spirit of the sport of the club.</li>
-            <li>Receive a formal warning from your manager or the club committee.</li>
-            <li>Be substituted or suspected from training and or matches</li>
-            <li>Contribute to any personal fines incurred.</li>
-            <li>Be required to leave the club.</li>
-        </ul>
         <form method="POST" action="{{ route('player.contract.submit', $player->id) }}" onsubmit="return submitForm()"
             class="forms-validate forms-form">
             @csrf

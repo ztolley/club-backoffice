@@ -135,6 +135,8 @@ h1 {
 
 .forms-container input[type="text"],
 .forms-container input[type="number"],
+.forms-container input[type="date"],
+.forms-container input[type="email"],
 .forms-container textarea {
     background-color: var(--forms-field-background-color);
     background-clip: padding-box;
@@ -178,7 +180,9 @@ h1 {
 }
 
 .forms-container input[type="text"],
-.forms-container input[type="number"] {
+.forms-container input[type="number"],
+.forms-container input[type="date"],
+.forms-container input[type="email"] {
     max-width: 60%;
     height: var(--forms-field-size-input-height);
 }
