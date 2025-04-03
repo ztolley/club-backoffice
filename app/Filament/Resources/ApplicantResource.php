@@ -92,6 +92,16 @@ class ApplicantResource extends Resource
                     ->label('Est Group')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('saturday_club')
+                    ->label('Saturday Club')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('sunday_club')
+                    ->label('Sunday Club')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([
                 Actions\EditAction::make(),
