@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ApplicantSubmitted;
 use App\Models\Applicant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class PublicPlayerApplicationFormController extends Controller
 {
@@ -46,9 +48,11 @@ class PublicPlayerApplicationFormController extends Controller
             'additional_info' => 'nullable|string',
         ]);
 
-        // what if it isn't valid?
 
-        Applicant::create($data);
+        $applicant = Applicant::create($data);
+
+        // Send email
+        Mail::send(new ApplicantSubmitted($applicant));
 
         return redirect()->route('player.application.success');
     }
