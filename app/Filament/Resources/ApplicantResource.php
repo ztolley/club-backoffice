@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+
 use App\Filament\Resources\ApplicantResource\Pages;
 use App\Mail\RichTextEmail;
 use App\Models\Applicant;
@@ -18,7 +19,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
-
+use Symfony\Component\DomCrawler\Crawler;
+use Illuminate\Support\Facades\Log;
 
 class ApplicantResource extends Resource
 {
@@ -130,9 +132,48 @@ class ApplicantResource extends Resource
                                 ->label('Email Body'),
                         ])
                         ->action(function (Collection $records, array $data) {
+                            $rawBody = $data['body'];
+                            $subject = $data['subject'];
+
                             foreach ($records as $record) {
-                                Mail::to($record->email)
-                                    ->send(new RichTextEmail($data['subject'], $data['body']));
+                                Mail::send([], [], function ($message) use ($record, $rawBody, $subject) {
+                                    $emailBody = $rawBody;
+                                    $crawler = new Crawler($emailBody);
+                                    $replacements = [];
+
+                                    $crawler->filter('img')->each(function ($img) use (&$message, &$replacements) {
+                                        $src = $img->attr('src');
+                                        $srcPath = parse_url($src, PHP_URL_PATH);
+
+                                        if ($srcPath && str_starts_with($srcPath, '/storage/')) {
+                                            $filePath = public_path($srcPath);
+
+                                            if (file_exists($filePath)) {
+                                                $cid = $message->embed($filePath);
+                                                $replacements[$src] = $cid;
+                                            } else {
+                                                Log::warning("Image not found: $filePath");
+                                            }
+                                        }
+                                    });
+
+                                    // Replace image src/href
+                                    foreach ($replacements as $original => $cid) {
+                                        $emailBody = str_replace("src=\"$original\"", "src=\"$cid\"", $emailBody);
+                                        $emailBody = str_replace("href=\"$original\"", "href=\"$cid\"", $emailBody);
+                                    }
+
+                                    // Clean Trix noise
+                                    $emailBody = preg_replace('/<figure[^>]*>(.*?)<\/figure>/is', '$1', $emailBody);
+                                    $emailBody = preg_replace('/<figcaption[^>]*>.*?<\/figcaption>/is', '', $emailBody);
+                                    $emailBody = preg_replace('/<a href="cid:[^"]+">(.*?)<\/a>/is', '$1', $emailBody);
+                                    $emailBody = preg_replace('/class="[^"]*"/i', '', $emailBody);
+                                    $emailBody = preg_replace('/<p>\s*<\/p>/', '', $emailBody);
+
+                                    $message->to($record->email)
+                                        ->subject($subject)
+                                        ->html($emailBody);
+                                });
                             }
 
                             Notification::make()
