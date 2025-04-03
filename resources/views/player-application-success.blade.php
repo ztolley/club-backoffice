@@ -168,7 +168,7 @@
         function sendHeightToParent() {
             const height = document.body.scrollHeight + 50;
             window.parent.postMessage({
-                iframeHeight: height
+                iframeHeight: 720
             }, "*");
         }
 
@@ -182,11 +182,6 @@
             block: 'center', // Align the element to the center of the viewport
             inline: 'nearest' // Horizontal alignment (optional)
         });
-    </script>
-
-
-    // Start the animation
-
     </script>
 </body>
 
