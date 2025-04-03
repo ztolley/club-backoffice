@@ -79,4 +79,6 @@ Import applicants from email source (After setting up .env with correct config)
 
 ```
 php artisan ingest:applicant
+
+php artisan storage:link
 ```

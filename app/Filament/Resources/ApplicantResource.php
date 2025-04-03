@@ -3,15 +3,22 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ApplicantResource\Pages;
+use App\Mail\RichTextEmail;
 use App\Models\Applicant;
-use Filament\Forms\Form;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Mail;
+
 
 class ApplicantResource extends Resource
 {
@@ -109,17 +116,39 @@ class ApplicantResource extends Resource
             ->bulkActions([
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make(),
+
+                    BulkAction::make('sendEmail')
+                        ->label('Send Email')
+                        ->icon('heroicon-m-envelope')
+                        ->form([
+                            TextInput::make('subject')
+                                ->required()
+                                ->label('Subject'),
+
+                            RichEditor::make('body')
+                                ->required()
+                                ->label('Email Body'),
+                        ])
+                        ->action(function (Collection $records, array $data) {
+                            foreach ($records as $record) {
+                                Mail::to($record->email)
+                                    ->send(new RichTextEmail($data['subject'], $data['body']));
+                            }
+
+                            Notification::make()
+                                ->title('Email sent to selected applicants.')
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion()
+                        ->modalHeading('Compose Email')
+                        ->modalSubmitActionLabel('Send'),
+
                 ]),
             ])
             ->defaultSort('name', 'asc');
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
 
     public static function getPages(): array
     {
