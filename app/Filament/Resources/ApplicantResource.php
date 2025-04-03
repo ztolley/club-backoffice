@@ -88,6 +88,10 @@ class ApplicantResource extends Resource
                     ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('estimated_age_group')
+                    ->label('Est Group')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([
                 Actions\EditAction::make(),
