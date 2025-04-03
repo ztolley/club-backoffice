@@ -1,7 +1,14 @@
 <?php
 
 use App\Http\Controllers\PublicPlayerContractFormController;
+use App\Http\Controllers\PublicPlayerApplicationFormController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/player-application/success', function () {
+    return view('player-application-success');
+})->name('player.application.success');
+Route::get('/player-application', [PublicPlayerApplicationFormController::class, 'show'])->name('player.application.show');
+Route::post('/player-application', [PublicPlayerApplicationFormController::class, 'submit'])->name('player.application.submit');
 
 Route::get('/player-contract/signed', function () {
     return view('player-contract-success');

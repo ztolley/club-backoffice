@@ -68,15 +68,26 @@ class ApplicantResource extends Resource
                     ->sortable(),
                 TextColumn::make('email')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('dob')
                     ->label('DOB')
                     ->date()
-                    ->sortable(),
-                TextColumn::make('preferred_position')->searchable(),
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('preferred_position')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('age_groups')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('application_date')
+                    ->label('Application Date')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([
                 Actions\EditAction::make(),
