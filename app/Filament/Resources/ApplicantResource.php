@@ -37,8 +37,7 @@ class ApplicantResource extends Resource
                     ->required(),
                 TextInput::make('phone')
                     ->label('Phone Number')
-                    ->tel()
-                    ->required(),
+                    ->tel(),
                 DatePicker::make('dob')
                     ->label('Date of Birth')
                     ->maxDate(now())
