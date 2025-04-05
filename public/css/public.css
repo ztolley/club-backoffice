@@ -31,7 +31,7 @@
     --forms-field-size-input-height: 43px;
     --forms-field-size-input-spacing: 15px;
     --forms-field-size-line-height: 19px;
-    --forms-field-size-padding-h: 14px;
+    --forms-field-size-padding-h: 12px;
     --forms-field-size-sublabel-spacing: 5px;
     --forms-field-text-color: rgba(0, 0, 0, 0.7);
     --forms-label-color: rgba(0, 0, 0, 0.85);
@@ -138,34 +138,38 @@ h1 {
 .forms-container input[type="date"],
 .forms-container input[type="email"],
 .forms-container textarea {
-    background-color: var(--forms-field-background-color);
-    background-clip: padding-box;
-    border-radius: var(--forms-field-border-radius);
-    color: var(--forms-field-text-color);
-    border-width: var(--forms-field-border-size);
-    border-style: var(--forms-field-border-style);
-    border-color: var(--forms-field-border-color);
-    padding: 0 var(--forms-field-size-padding-h);
-    font-size: var(--forms-field-size-font-size);
-    line-height: 100%;
-    box-shadow: none;
-    transition: border 0.15s, box-shadow 0.15s;
-
     display: block;
-    width: 100%;
-    box-sizing: border-box;
+
+    font-size: var(--forms-field-size-font-size);
     font-family: inherit;
     font-style: normal;
     font-weight: 400;
-    margin: 0;
 
-    background: none;
-    text-indent: 0;
+    color: var(--forms-field-text-color);
+
+    background-color: var(--forms-field-background-color);
+    background-clip: padding-box;
+
+    border-radius: var(--forms-field-border-radius);
+    border-width: var(--forms-field-border-size);
+    border-style: var(--forms-field-border-style);
+    border-color: var(--forms-field-border-color);
+
+    box-sizing: border-box;
+    width: 100%;
+
+    margin: 0;
+    padding: 0 var(--forms-field-size-padding-h);
+
+    line-height: 2.5rem;
+
+    box-shadow: none;
+    transition: border 0.15s, box-shadow 0.15s;
+
     text-shadow: none;
     text-transform: none;
-    outline: none;
-    position: static;
 
+    outline: none;
     overflow-clip-margin: 0px !important;
     overflow: clip !important;
 
@@ -191,7 +195,7 @@ h1 {
     line-height: 1.3;
     min-height: var(--forms-field-size-input-height);
     height: calc(var(--forms-field-size-input-height) * 2.8);
-    padding: var(--forms-field-size-padding-h);
+    padding: var(--forms-field-size-padding-v) var(--forms-field-size-padding-h);
     resize: vertical;
     width: 100%;
 }
