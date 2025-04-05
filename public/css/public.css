@@ -8,8 +8,8 @@
     --min-width: 320px;
     --content-width: 720px;
 
-    --forms-button-background-color: #066aab;
-    --forms-button-border-color: #066aab;
+    --forms-button-background-color: var(--accent);
+    --forms-button-border-color: var(--accent);
     --forms-button-border-color-secondary: #e0e0e0;
     --forms-button-border-radius: 3px;
     --forms-button-border-size: 1px;
@@ -371,7 +371,11 @@ h1 {
 .container button:hover,
 .container button:active,
 .container button:focus {
-    background-color: var(--accent);
+    background: linear-gradient(
+        0deg,
+        rgba(0,0,0,0.2),
+        rgba(0,0,0,0.2)),
+        var(--forms-button-background-color-alt, var(--forms-button-background-color));
 }
 
 .container button.secondary:hover,
