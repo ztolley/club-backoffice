@@ -190,7 +190,7 @@ h1 {
 .forms-container input[type="email"] {
     max-width: 60%;
     height: var(--forms-field-size-input-height);
-    padding: var(--forms-field-size-padding-v) var(--forms-field-size-padding-h);
+    padding: 0 var(--forms-field-size-padding-h);
 }
 
 .forms-container textarea {
