@@ -32,6 +32,7 @@
     --forms-field-size-input-spacing: 15px;
     --forms-field-size-line-height: 19px;
     --forms-field-size-padding-h: 12px;
+    --forms-field-size-padding-v: 6px;
     --forms-field-size-sublabel-spacing: 5px;
     --forms-field-text-color: rgba(0, 0, 0, 0.7);
     --forms-label-color: rgba(0, 0, 0, 0.85);
@@ -189,6 +190,7 @@ h1 {
 .forms-container input[type="email"] {
     max-width: 60%;
     height: var(--forms-field-size-input-height);
+    padding: var(--forms-field-size-padding-v) var(--forms-field-size-padding-h);
 }
 
 .forms-container textarea {
