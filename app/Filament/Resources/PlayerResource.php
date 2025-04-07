@@ -27,6 +27,7 @@ class PlayerResource extends Resource
             ->schema([
                 TextInput::make('name')->required(),
                 Textarea::make('address')
+                    ->rows(5)
                     ->required(),
                 TextInput::make('email')
                     ->label('Email Address')
@@ -51,10 +52,16 @@ class PlayerResource extends Resource
 
                 TextInput::make('preferred_position'),
                 TextInput::make('other_positions'),
-                Textarea::make('medical_conditions')->columnSpanFull(),
-                Textarea::make('injuries')->columnSpanFull(),
+                Textarea::make('medical_conditions')
+                    ->rows(5)
+                    ->columnSpanFull(),
+                Textarea::make('injuries')
+                    ->rows(5)
+                    ->columnSpanFull(),
                 Textarea::make('additional_info')->columnSpanFull(),
-                Textarea::make('notes')->columnSpanFull(),
+                Textarea::make('notes')
+                    ->rows(10)
+                    ->columnSpanFull(),
 
                 Toggle::make('allowed_marketing')->required(),
                 Toggle::make('allowed_photography')->required(),

@@ -30,6 +30,7 @@ class ApplicantResource extends Resource
             ->schema([
                 TextInput::make('name')->required(),
                 Textarea::make('address')
+                    ->rows(5)
                     ->required(),
                 TextInput::make('email')
                     ->label('Email Address')
@@ -53,13 +54,21 @@ class ApplicantResource extends Resource
                 Textarea::make('how_hear')
                     ->label('How did you hear about us?')
                     ->columnSpanFull(),
-                Textarea::make('medical_conditions')->columnSpanFull(),
-                Textarea::make('injuries')->columnSpanFull(),
-                Textarea::make('additional_info')->columnSpanFull(),
+                Textarea::make('medical_conditions')
+                    ->rows(5)
+                    ->columnSpanFull(),
+                Textarea::make('injuries')
+                    ->rows(5)
+                    ->columnSpanFull(),
+                Textarea::make('additional_info')
+                    ->rows(5)
+                    ->columnSpanFull(),
                 DatePicker::make('application_date')
                     ->label('Application Date')
                     ->default(now()),
-                Textarea::make('notes')->columnSpanFull(),
+                Textarea::make('notes')
+                    ->rows(10)
+                    ->columnSpanFull(),
             ]);
     }
 
