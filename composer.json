@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "hartland/backoffice",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Manage Football Club players and trialists.",
+    "keywords": ["laravel", "framework", "football"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
