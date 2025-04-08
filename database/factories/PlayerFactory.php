@@ -22,11 +22,7 @@ class PlayerFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'address' => fake()->address(),
-            'email' => fake()->safeEmail(),
-            'phone' => fake()->phoneNumber(),
             'dob' => fake()->date(),
-            'parent_carer_names' => fake()->name(),
             'preferred_position' => fake()->word(),
             'other_positions' => fake()->word(),
             'medical_conditions' => fake()->text(),

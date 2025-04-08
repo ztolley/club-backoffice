@@ -16,9 +16,4 @@ class ViewPlayer extends ViewRecord
             Actions\EditAction::make(), // Add the Edit button
         ];
     }
-
-    public function getTitle(): string
-    {
-        return $this->record->first_name . ' ' . $this->record->last_name;
-    }
 }

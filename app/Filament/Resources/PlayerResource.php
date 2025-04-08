@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PlayerResource\Pages;
+use App\Filament\Resources\PlayerResource\RelationManagers\ContactsRelationManager;
 use App\Models\Player;
 use Filament\Forms\Form;
 use Filament\Forms\Components\DatePicker;
@@ -14,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Tables\Actions;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PlayerResource extends Resource
 {
@@ -25,17 +27,8 @@ class PlayerResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')->required(),
-                Textarea::make('address')
-                    ->rows(5)
-                    ->required(),
-                TextInput::make('email')
-                    ->label('Email Address')
-                    ->email()
-                    ->required(),
-                TextInput::make('phone')
-                    ->label('Phone Number')
-                    ->tel()
+                TextInput::make('name')
+                    ->columnSpanFull()
                     ->required(),
                 DatePicker::make('dob')
                     ->label('Date of Birth')
@@ -45,10 +38,6 @@ class PlayerResource extends Resource
                     ->label('FAN')
                     ->numeric()
                     ->required(),
-                Textarea::make('parent_carer_names')
-                    ->label('Parent/Carer Names')
-                    ->required()
-                    ->columnSpanFull(),
 
                 TextInput::make('preferred_position'),
                 TextInput::make('other_positions'),
@@ -79,7 +68,7 @@ class PlayerResource extends Resource
 
                 Select::make('applicant_id')
                     ->relationship('applicant', 'id')
-                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->first_name} {$record->last_name}")
+                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->name}")
                     ->searchable()
                     ->preload()
 
@@ -93,7 +82,18 @@ class PlayerResource extends Resource
                 TextColumn::make('name')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('email')->searchable(),
+                TextColumn::make('primaryContact.email')
+                    ->label('Email')
+                    ->getStateUsing(function ($record) {
+                        return $record->contacts
+                            ->firstWhere('pivot.is_primary', true)?->email;
+                    }),
+                TextColumn::make('primaryContact.phone')
+                    ->label('Phone')
+                    ->getStateUsing(function ($record) {
+                        return $record->contacts
+                            ->firstWhere('pivot.is_primary', true)?->phone;
+                    }),
                 TextColumn::make('dob')
                     ->label('DOB')
                     ->date(),
@@ -116,7 +116,7 @@ class PlayerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ContactsRelationManager::class,
         ];
     }
 
@@ -127,5 +127,11 @@ class PlayerResource extends Resource
             'create' => Pages\CreatePlayer::route('/create'),
             'edit' => Pages\EditPlayer::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['contacts' => fn($query) => $query->withPivot('is_primary')]);
     }
 }

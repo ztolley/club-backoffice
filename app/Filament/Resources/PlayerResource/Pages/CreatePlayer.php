@@ -25,12 +25,8 @@ class CreatePlayer extends CreateRecord
 
             if ($applicant) {
                 $this->form->fill([
-                    'first_name' => $applicant->first_name,
-                    'last_name' => $applicant->last_name,
-                    'primary_email' => $applicant->email,
-                    'primary_phone' => $applicant->phone,
-                    'address' => $applicant->address,
-                    'postal_code' => $applicant->postal_code,
+                    'name' => $applicant->name,
+                    'dob' => $applicant->dob,
                     'applicant_id' => $applicant->id,
                 ]);
             }
