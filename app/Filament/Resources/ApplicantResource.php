@@ -152,7 +152,57 @@ class ApplicantResource extends Resource
                         ->deselectRecordsAfterCompletion()
                         ->modalHeading('Compose Email')
                         ->modalSubmitActionLabel('Send'),
+                    // Export CSV Bulk Action
+                    BulkAction::make('exportCsv')
+                        ->label('Export as CSV')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->action(function (Collection $records) {
+                            // Generate CSV content
+                            $csvContent = $records->map(function ($record) {
+                                return [
+                                    'Name' => $record->name,
+                                    'Email' => $record->email,
+                                    'Phone' => $record->phone,
+                                    'DOB' => $record->dob?->format('Y-m-d'),
+                                    'Address' => $record->address,
+                                    'School' => $record->school,
+                                    'Saturday Club' => $record->saturday_club,
+                                    'Sunday Club' => $record->sunday_club,
+                                    'Previous Clubs' => $record->previous_clubs,
+                                    'Playing Experience' => $record->playing_experience,
+                                    'Preferred Position' => $record->preferred_position,
+                                    'Other Positions' => $record->other_positions,
+                                    'Age Groups' => $record->age_groups,
+                                    'How Did You Hear' => $record->how_hear,
+                                    'Medical Conditions' => $record->medical_conditions,
+                                    'Injuries' => $record->injuries,
+                                    'Additional Info' => $record->additional_info,
+                                    'Application Date' => $record->application_date?->format('dd/mm/Y'),
+                                ];
+                            });
 
+                            // Create a temporary file for the CSV
+                            $fileName = 'applicants_export_' . now()->format('Y_m_d_H_i_s') . '.csv';
+                            $filePath = storage_path('app/' . $fileName);
+
+                            // Open the file and write the CSV content
+                            $file = fopen($filePath, 'w');
+                            fputcsv($file, array_keys($csvContent->first())); // Add headers
+                            foreach ($csvContent as $row) {
+                                fputcsv($file, $row);
+                            }
+                            fclose($file);
+                            Notification::make()
+                                ->title('Applicants CSV Exported')
+                                ->body('The selected applicant data has been exported as a CSV file and downloaded to your computer.')
+                                ->success()
+                                ->send();
+
+
+                            // Return the file as a download response
+                            return response()->download($filePath)->deleteFileAfterSend();
+                        })
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ])
             ->defaultSort('name', 'asc');

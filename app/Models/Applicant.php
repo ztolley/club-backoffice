@@ -20,7 +20,8 @@ class Applicant extends Model
      * @var array
      */
     protected $casts = [
-        'dob' => 'date'
+        'dob' => 'date',
+        'application_date' => 'date',
     ];
 
     public function player(): BelongsTo
