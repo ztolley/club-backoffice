@@ -13,16 +13,19 @@ class ApplicantFactory extends Factory
      * @var string
      */
     protected $model = Applicant::class;
+    protected static int $emailCounter = 1;
 
     /**
      * Define the model's default state.
      */
     public function definition(): array
     {
+        $email = 'zac+' . static::$emailCounter++ . '@thetolleys.com';
+
         return [
             'name' => fake()->name(),
             'address' => fake()->address(),
-            'email' => fake()->safeEmail(),
+            'email' => $email,
             'phone' => fake()->phoneNumber(),
             'dob' => fake()->date(),
             'school' => fake()->word(),

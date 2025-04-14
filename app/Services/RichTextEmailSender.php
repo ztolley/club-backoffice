@@ -11,8 +11,27 @@ class RichTextEmailSender
 {
     public function sendToMany(Collection $recipients, string $subject, string $rawBody): void
     {
+        # Loops through each recipient and sends the email. Note that AWS limits us to 14 emails per second.
+        # This is a workaround to avoid hitting that limit.
+        # We send 10 emails at a time, and if the elapsed time is less than 1 second, we wait for the remainder of the second.
+        # This is not a perfect solution, but it should help us avoid hitting the limit.
+
+        $counter = 0;
+        $start = microtime(true);
+
         foreach ($recipients as $recipient) {
             $this->sendToSingle($recipient->email, $subject, $rawBody);
+
+            $counter++;
+
+            if ($counter >= 10) {
+                $elapsed = microtime(true) - $start;
+                if ($elapsed < 1) {
+                    usleep((1 - $elapsed) * 1_000_000); // Wait for remainder of 1s
+                }
+                $counter = 0;
+                $start = microtime(true);
+            }
         }
     }
 
