@@ -12,7 +12,6 @@ function sendHeightToParent() {
  * @returns {boolean} - Returns true to allow the form to be submitted.
  */
 function submitForm() {
-    console.log('Submitting form');
     try {
         // Clear any form errors displayed
         document.querySelectorAll('.forms-error').forEach((error) => {

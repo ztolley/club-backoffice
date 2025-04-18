@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <header id="header">
+    <header id="header" class="hide-in-iframe">
         <img src="https://www.hartlandgirlsacademy.co.uk/wp-content/uploads/2024/08/cropped-HARTLAND-LOGO-2048.png"
             alt="Hartland Logo" height="256" width="256" />
         <h1>25/26 - Player Contract</h1>
@@ -22,7 +22,7 @@
     <div class="container">
         {!! $playerPromise !!}
 
-        <form method="POST" action="{{ route('player.contract.submit', $player->id) }}" onsubmit="return submitForm()"
+        <form id="player-contract-form" method="POST" action="{{ route('player.contract.submit', $player->id) }}"
             class="forms-validate forms-form">
             @csrf
 
@@ -99,6 +99,8 @@
     <script>
         const canvas = document.getElementById('player-signature');
         const signaturePad = new SignaturePad(canvas);
+        const clearButton = document.getElementById("clear-signature");
+        const form = document.querySelector('#player-contract-form');
 
         function submitForm() {
             if (signaturePad.isEmpty()) {
@@ -111,18 +113,14 @@
             return true;
         }
 
-        // Ensure canvas resizes properly
+        // Ensure canvas size adapts to the container size
         function resizeCanvas() {
             canvas.width = canvas.offsetWidth;
             canvas.height = 200;
             signaturePad.clear(); // clear on resize
         }
 
-        window.addEventListener("resize", resizeCanvas);
-        window.addEventListener("load", resizeCanvas);
-
-        const clearButton = document.getElementById("clear-signature");
-
+        // If the user presses clear, clear the signature
         function onSignatureReset() {
             signaturePad.clear();
 
@@ -130,7 +128,36 @@
             clearButton.blur();
         }
 
+        // Add validation to the form
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            if (submitForm()) {
+                form.submit();
+            }
+        });
+
+
+        // Add event handlers
+        window.addEventListener("resize", resizeCanvas);
+        window.addEventListener("load", resizeCanvas);
         clearButton.addEventListener("click", onSignatureReset);
+
+        // Add some additional handling when displayed within an iframe
+        if (window.self !== window.top) {
+            // Page is in an iframe
+            document.body.classList.add('in-iframe');
+
+            // Tell the parent frame to resize
+            function sendHeightToParent() {
+                const height = document.body.scrollHeight + 50;
+                window.parent.postMessage({
+                    iframeHeight: height
+                }, "*");
+            }
+
+            window.addEventListener("load", sendHeightToParent);
+            window.addEventListener("resize", sendHeightToParent);
+        }
     </script>
 </body>
 

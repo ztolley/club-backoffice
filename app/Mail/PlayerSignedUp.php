@@ -19,7 +19,7 @@ class PlayerSignedUp extends Mailable
 
     public function build()
     {
-        return $this->subject('New PlayerSigned Up')
+        return $this->subject('New Player - Signed Up')
             ->to(env('MAIL_SIGNED_TO_ADDRESS', 'trials@hartlandgirlsacademy.co.uk'))
             ->view('emails.player_submitted');
     }

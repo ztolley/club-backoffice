@@ -29,7 +29,7 @@
 
 <body>
     <div id="page-content">
-        <header id="header">
+        <header id="header" class="hide-in-iframe">
             <img src="https://www.hartlandgirlsacademy.co.uk/wp-content/uploads/2024/08/cropped-HARTLAND-LOGO-2048.png"
                 alt="Hartland Logo" height="256" width="256" />
             <h1>25/26 - Player Contract</h1>
@@ -41,6 +41,12 @@
     </div>
     <canvas id="fireworks"></canvas>
     <script src="{{ asset('js/fireworks.js') }}"></script>
+    <script>
+        if (window.self !== window.top) {
+            // Page is in an iframe
+            document.body.classList.add('in-iframe');
+        }
+    </script>
 </body>
 
 </html>

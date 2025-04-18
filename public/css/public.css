@@ -498,3 +498,7 @@ white-space: nowrap;
     margin-top: 3rem;
     font-size: .75rem;
 }
+
+.in-iframe .hide-in-iframe {
+    display: none !important;
+}
