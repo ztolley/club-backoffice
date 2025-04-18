@@ -40,6 +40,11 @@ class Player extends Model
         return $this->belongsTo(Team::class);
     }
 
+    public function alternateTeam()
+    {
+        return $this->belongsTo(Team::class, 'alternate_team_id');
+    }
+
     public function contacts(): BelongsToMany
     {
         return $this->belongsToMany(Contact::class, 'contact_player')

@@ -69,7 +69,26 @@ class PlayerResource extends Resource
                     ->label('Agreed to Parent Code of Conduct')
                     ->required(),
 
-                Select::make('team_id')->relationship('team', 'name'),
+                Select::make('team_id')
+                    ->label('Primary Team')
+                    ->relationship('team', 'name', fn($query) => $query->orderBy('name'))
+                    ->nullable()
+                    ->preload()
+                    ->reactive(),
+
+                Select::make('alternate_team_id')
+                    ->label('Alternate Team')
+                    ->relationship('alternateTeam', 'name')
+                    ->nullable()
+                    ->preload()
+                    ->helperText('Optional. The second team this player is registered with.')
+                    ->reactive()
+                    ->options(function ($get) {
+                        $primary = $get('team_id');
+                        return \App\Models\Team::when($primary, fn($query) => $query->where('id', '!=', $primary))
+                            ->orderBy('name')
+                            ->pluck('name', 'id');
+                    }),
 
                 DatePicker::make('signed_date'),
 
