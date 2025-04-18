@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * PlayerContractSignature
@@ -17,4 +18,9 @@ class PlayerContractSignature extends Model
     protected $casts = [
         'submitted_at' => 'datetime',
     ];
+
+    public function player(): BelongsTo
+    {
+        return $this->belongsTo(Player::class);
+    }
 }

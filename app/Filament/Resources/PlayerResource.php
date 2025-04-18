@@ -4,18 +4,24 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PlayerResource\Pages;
 use App\Filament\Resources\PlayerResource\RelationManagers\ContactsRelationManager;
+use App\Filament\Resources\PlayerResource\RelationManagers\ContractSignaturesRelationManager;
 use App\Models\Player;
-use Filament\Forms\Form;
+use App\Services\RichTextEmailSender;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class PlayerResource extends Resource
 {
@@ -109,6 +115,51 @@ class PlayerResource extends Resource
             ->bulkActions([
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make(),
+
+                    BulkAction::make('sendEmail')
+                        ->label('Email primary contacts')
+                        ->icon('heroicon-m-envelope')
+                        ->form([
+                            TextInput::make('subject')
+                                ->required()
+                                ->label('Subject'),
+
+                            RichEditor::make('body')
+                                ->required()
+                                ->label('Email Body'),
+                        ])
+                        ->action(function (Collection $records, array $data) {
+                            // Each record is a Player model
+                            // Get the primary contact for each player to get the email addresses
+                            // the contact returned in the array must have the email attribute
+                            $filtered = $records->map(function ($record) {
+                                return $record->contacts
+                                    ->firstWhere('pivot.is_primary', true);
+                            })
+                                ->filter(fn($record) => !empty($record->email))
+                                ->unique();
+
+
+                            if ($filtered->isEmpty()) {
+                                Notification::make()
+                                    ->title('No valid email addresses found.')
+                                    ->danger()
+                                    ->send();
+
+                                return;
+                            }
+
+                            app(RichTextEmailSender::class)
+                                ->sendToMany($filtered, $data['subject'], $data['body']);
+
+                            Notification::make()
+                                ->title('Email sent.')
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion()
+                        ->modalHeading('Compose Email')
+                        ->modalSubmitActionLabel('Send'),
                 ]),
             ])
             ->defaultSort('name', 'asc');;
@@ -118,6 +169,7 @@ class PlayerResource extends Resource
     {
         return [
             ContactsRelationManager::class,
+            ContractSignaturesRelationManager::class,
         ];
     }
 

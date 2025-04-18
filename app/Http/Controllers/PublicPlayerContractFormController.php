@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 class PublicPlayerContractFormController extends Controller
 {
+    protected string $playerContractName = 'Hartland 25/27 Player Code of Conduct';
     protected string $playerPromise = <<<HTML
 <p>As an Hartland Girls Academy player, I will…</p>
 
@@ -67,8 +68,15 @@ HTML;
             'name' => $player->name,
             'fan' => $player->fan,
             'signature_base64' => $data['signature'],
+            'contract_name' => $this->playerContractName,
             'contract_content' => $this->playerPromise,
             'submitted_at' => now(),
+        ]);
+
+        // Update the player record to indicate that the contract has been signed
+        $player->update([
+            'agreed_player_code' => true,
+            'signed_date' => now(),
         ]);
 
         return redirect()->route('player.contract.success');

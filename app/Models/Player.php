@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 
@@ -44,5 +45,10 @@ class Player extends Model
         return $this->belongsToMany(Contact::class, 'contact_player')
             ->withPivot('is_primary')
             ->withTimestamps();
+    }
+
+    public function contractSignatures(): HasMany
+    {
+        return $this->hasMany(PlayerContractSignature::class);
     }
 }

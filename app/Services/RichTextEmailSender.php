@@ -35,7 +35,7 @@ class RichTextEmailSender
         }
     }
 
-    protected function sendToSingle(string $email, string $subject, string $rawBody): void
+    public function sendToSingle(string $email, string $subject, string $rawBody): void
     {
         Mail::send([], [], function ($message) use ($email, $subject, $rawBody) {
             $emailBody = $this->processBody($rawBody, $message);

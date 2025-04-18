@@ -2,16 +2,23 @@
 
 namespace App\Filament\Resources\PlayerResource\RelationManagers;
 
-use Filament\Forms\Form;
+use App\Services\RichTextEmailSender;
+use Filament\Forms;
+use Filament\Forms\Components\Actions\Action as FormAction;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Actions;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-
+use Illuminate\Support\Collection;
 
 class ContactsRelationManager extends RelationManager
 {
@@ -26,9 +33,46 @@ class ContactsRelationManager extends RelationManager
                     ->columnSpanFull()
                     ->required(),
                 TextInput::make('email')
-                    ->email(),
+                    ->email()
+                    ->columnSpanFull(),
+                // Email action button
+                Forms\Components\Actions::make([
+                    FormAction::make('sendEmail')
+                        ->icon('heroicon-m-envelope')
+                        ->label('')
+                        ->color('success')
+                        ->size('sm')
+                        ->tooltip('Send email to contact')
+                        ->form([
+                            TextInput::make('subject')->required()->label('Subject'),
+                            RichEditor::make('body')->required()->label('Email Body'),
+                        ])
+                        ->action(function (array $data, $record) {
+                            if (empty($record->email)) {
+                                Notification::make()
+                                    ->title('No email address for this contact.')
+                                    ->danger()
+                                    ->send();
+                                return;
+                            }
+
+                            app(\App\Services\RichTextEmailSender::class)
+                                ->sendToMany(collect([$record]), $data['subject'], $data['body']);
+
+                            Notification::make()
+                                ->title('Email sent.')
+                                ->success()
+                                ->send();
+                        })
+                        ->modalHeading('Compose Email')
+                        ->modalSubmitActionLabel('Send')
+                        ->hidden(function ($get) {
+                            return blank($get('email'));
+                        }),
+                ]),
                 TextInput::make('phone')
-                    ->tel(),
+                    ->tel()
+                    ->columnSpanFull(),
                 Textarea::make('address')
                     ->rows(5)
                     ->columnSpanFull(),
@@ -41,7 +85,9 @@ class ContactsRelationManager extends RelationManager
                     ->saveRelationshipsUsing(function ($record, $state) {
                         $record->pivot->is_primary = $state;
                         $record->pivot->save();
-                    })
+                    }),
+
+
             ]);
     }
 
@@ -70,8 +116,44 @@ class ContactsRelationManager extends RelationManager
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
+
+                    BulkAction::make('sendEmail')
+                        ->label('Email contacts')
+                        ->icon('heroicon-m-envelope')
+                        ->form([
+                            TextInput::make('subject')
+                                ->required()
+                                ->label('Subject'),
+
+                            RichEditor::make('body')
+                                ->required()
+                                ->label('Email Body'),
+                        ])
+                        ->action(function (Collection $records, array $data) {
+                            $filtered = $records->filter(fn($record) => !empty($record->email));
+
+                            if ($filtered->isEmpty()) {
+                                Notification::make()
+                                    ->title('No valid email addresses found.')
+                                    ->danger()
+                                    ->send();
+
+                                return;
+                            }
+
+                            app(RichTextEmailSender::class)
+                                ->sendToMany($filtered->unique('email'), $data['subject'], $data['body']);
+
+                            Notification::make()
+                                ->title('Email sent.')
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion()
+                        ->modalHeading('Compose Email')
+                        ->modalSubmitActionLabel('Send'),
                 ]),
             ]);
     }
