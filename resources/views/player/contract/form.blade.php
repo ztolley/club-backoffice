@@ -58,8 +58,7 @@
 
                 </div>
 
-                <div id="player-signature-section" class="forms-field forms-field-checkbox"
-                    data-field="player-agreement">
+                <div id="player-signature-section" class="forms-field" data-field="player-agreement">
                     <label class="forms-field-label" for="player-signature">
                         Player Signature
                         <span class="forms-required-label" aria-hidden="true">*</span>

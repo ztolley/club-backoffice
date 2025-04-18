@@ -52,8 +52,9 @@ class PlayerResource extends Resource
                     ->rows(10)
                     ->columnSpanFull(),
 
-                Toggle::make('allowed_marketing')->required(),
-                Toggle::make('allowed_photography')->required(),
+                Toggle::make('allowed_marketing')
+                    ->columnSpanFull()
+                    ->required(),
 
                 Toggle::make('agreed_player_code')
                     ->label('Agreed to Player Code of Conduct')

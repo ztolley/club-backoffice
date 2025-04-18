@@ -18,7 +18,7 @@ class PublicPlayerApplicationFormController extends Controller
      */
     public function show()
     {
-        return view('player-application-form', []);
+        return view('application/form', []);
     }
 
     /**
@@ -54,6 +54,6 @@ class PublicPlayerApplicationFormController extends Controller
         // Send email
         Mail::send(new ApplicantSubmitted($applicant));
 
-        return redirect()->route('player.application.success');
+        return redirect()->route('application.success');
     }
 }

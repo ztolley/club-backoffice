@@ -40,7 +40,7 @@ HTML;
     {
         $player = Player::where('id', $id)->firstOrFail();
 
-        return view('player-contract-form', [
+        return view('player/contract/form', [
             'player' => $player,
             'playerPromise' => $this->playerPromise
         ]);

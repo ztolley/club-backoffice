@@ -29,7 +29,6 @@ class PlayerFactory extends Factory
             'injuries' => fake()->text(),
             'additional_info' => fake()->text(),
             'allowed_marketing' => fake()->boolean(),
-            'allowed_photography' => fake()->boolean(),
             'agreed_player_code' => fake()->boolean(),
             'agreed_parent_code' => fake()->boolean(),
             'signed_date' => fake()->date(),

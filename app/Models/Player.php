@@ -24,7 +24,6 @@ class Player extends Model
     protected $casts = [
         'dob' => 'date',
         'allowed_marketing' => 'boolean',
-        'allowed_photography' => 'boolean',
         'agreed_player_code' => 'boolean',
         'agreed_parent_code' => 'boolean',
         'signed_date' => 'date',
