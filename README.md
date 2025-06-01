@@ -17,6 +17,7 @@ The app uses laravels built in database migration tools. Before the application 
 ```
 php artisan migrate:fresh
 php artisan db:seed --class=ShieldSeeder
+php artisan db:seed
 ```
 
 After installation a one off command is required to allow access to server storage when writing and sending emails.
@@ -24,3 +25,15 @@ After installation a one off command is required to allow access to server stora
 ```
 php artisan storage:link
 ```
+
+## Migration notes
+
+In production sync the files across and then use the following to make any database updates
+
+```
+php artisan migrate
+```
+
+## Development
+
+To develop code ensure PHP is locally installed and use `php artisan serve`
