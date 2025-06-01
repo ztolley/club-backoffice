@@ -116,7 +116,7 @@ class ContactsRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->modalHeading('Edit Contact'),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
