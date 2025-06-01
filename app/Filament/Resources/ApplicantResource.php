@@ -121,9 +121,7 @@ class ApplicantResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->actions([
-                Actions\EditAction::make(),
-            ])
+            ->recordUrl(fn($record) => route('filament.admin.resources.applicants.edit', $record))
             ->bulkActions([
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make(),
