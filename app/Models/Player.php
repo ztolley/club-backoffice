@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-
 
 
 class Player extends Model
@@ -29,11 +27,6 @@ class Player extends Model
         'agreed_parent_code' => 'boolean',
         'signed_date' => 'date',
     ];
-
-    public function applicant(): HasOne
-    {
-        return $this->hasOne(Applicant::class, 'player_id');
-    }
 
     public function team(): BelongsTo
     {

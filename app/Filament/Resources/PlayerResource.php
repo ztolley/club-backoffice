@@ -91,13 +91,6 @@ class PlayerResource extends Resource
                     }),
 
                 DatePicker::make('signed_date'),
-
-                Select::make('applicant_id')
-                    ->relationship('applicant', 'id')
-                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->name}")
-                    ->searchable()
-                    ->preload()
-
             ]);
     }
 

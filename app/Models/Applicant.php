@@ -5,7 +5,6 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 use App\Traits\HasUuid;
 
@@ -23,11 +22,6 @@ class Applicant extends Model
         'dob' => 'date',
         'application_date' => 'date',
     ];
-
-    public function player(): BelongsTo
-    {
-        return $this->belongsTo(Player::class, 'player_id');
-    }
 
     public function getEstimatedAgeGroupAttribute(): ?string
     {
