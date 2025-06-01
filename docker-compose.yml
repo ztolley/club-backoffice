@@ -12,11 +12,10 @@ services:
             DB_PASSWORD: password
         volumes:
             - ..:/var/www/html
-            - ..:/var/www/html
             - ~/.ssh:/root/.ssh:ro
             - ~/.gitconfig:/root/.gitconfig:ro
         ports:
-            - "8000:8000"
+            - "8003:8000"
         extra_hosts:
             - "host.docker.internal:host-gateway"
         depends_on:
