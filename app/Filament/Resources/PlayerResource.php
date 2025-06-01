@@ -103,23 +103,27 @@ class PlayerResource extends Resource
                     ->searchable(),
                 TextColumn::make('primaryContact.email')
                     ->label('Email')
+                    ->toggleable()
                     ->getStateUsing(function ($record) {
                         return $record->contacts
                             ->firstWhere('pivot.is_primary', true)?->email;
                     }),
                 TextColumn::make('primaryContact.phone')
                     ->label('Phone')
+                    ->toggleable()
                     ->getStateUsing(function ($record) {
                         return $record->contacts
                             ->firstWhere('pivot.is_primary', true)?->phone;
                     }),
                 TextColumn::make('dob')
                     ->label('DOB')
-                    ->date(),
-                TextColumn::make('preferred_position')->searchable(),
+                    ->date()
+                    ->toggleable(),
+                TextColumn::make('preferred_position')->searchable()->toggleable(),
                 TextColumn::make('team.name')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
             ])
             ->recordUrl(fn($record) => route('filament.admin.resources.players.edit', $record))
             ->bulkActions([
