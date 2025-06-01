@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TeamResource\Pages;
+use App\Filament\Resources\TeamResource\RelationManagers\PlayersRelationManager;
 use App\Models\Team;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -42,9 +43,7 @@ class TeamResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Actions\EditAction::make(),
-            ])
+            ->recordUrl(fn($record) => route('filament.admin.resources.teams.view', $record))
             ->bulkActions([
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make(),
@@ -53,7 +52,12 @@ class TeamResource extends Resource
             ->defaultSort('name', 'asc');
     }
 
-
+    public static function getRelations(): array
+    {
+        return [
+            PlayersRelationManager::class,
+        ];
+    }
 
     public static function getPages(): array
     {
@@ -61,6 +65,7 @@ class TeamResource extends Resource
             'index' => Pages\ListTeams::route('/'),
             'create' => Pages\CreateTeam::route('/create'),
             'edit' => Pages\EditTeam::route('/{record}/edit'),
+            'view' => Pages\ViewTeam::route('/{record}/view'),
         ];
     }
 }
