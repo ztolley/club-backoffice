@@ -121,9 +121,7 @@ class PlayerResource extends Resource
                     ->searchable()
                     ->sortable(),
             ])
-            ->actions([
-                Actions\EditAction::make(),
-            ])
+            ->recordUrl(fn($record) => route('filament.admin.resources.players.edit', $record))
             ->bulkActions([
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make(),
@@ -173,6 +171,16 @@ class PlayerResource extends Resource
                         ->modalHeading('Compose Email')
                         ->modalSubmitActionLabel('Send'),
                 ]),
+            ])
+            ->filters([
+                \Filament\Tables\Filters\SelectFilter::make('team_id')
+                    ->label('Team')
+                    ->options(\App\Models\Team::orderBy('name')->pluck('name', 'id')->toArray())
+                    ->indicateUsing(function ($state): ?string {
+                        if (!$state || !is_numeric($state)) return null;
+                        $team = \App\Models\Team::find($state);
+                        return $team ? 'Team: ' . $team->name : null;
+                    }),
             ])
             ->defaultSort('name', 'asc');;
     }
