@@ -21,6 +21,12 @@ class ApplicantFactory extends Factory
     public function definition(): array
     {
         $email = 'zac+' . static::$emailCounter++ . '@thetolleys.com';
+        $ageGroups = ['U12', 'U13', 'U14', 'U15', 'U16'];
+        $ageGroup = $ageGroups[array_rand($ageGroups)];
+
+        $preferredPositions = ['CB', 'RB', 'LB', 'CM', 'RM', 'LM', 'CF', 'RW', 'LW'];
+        $preferredPosition = $preferredPositions[array_rand($preferredPositions)];
+
 
         return [
             'name' => fake()->name(),
@@ -33,9 +39,9 @@ class ApplicantFactory extends Factory
             'sunday_club' => fake()->word(),
             'previous_clubs' => fake()->text(),
             'playing_experience' => fake()->text(),
-            'preferred_position' => fake()->word(),
-            'other_positions' => fake()->word(),
-            'age_groups' => fake()->word(),
+            'preferred_position' => $preferredPosition,
+            'other_positions' => "",
+            'age_groups' => $ageGroup,
             'how_hear' => fake()->text(),
             'medical_conditions' => fake()->text(),
             'injuries' => fake()->text(),
