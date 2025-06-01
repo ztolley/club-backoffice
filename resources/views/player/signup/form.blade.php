@@ -50,6 +50,9 @@
                 <x-date-field label="Player Date of Birth" name="dob" value="{{ old('dob') }}"
                     :required="true" />
 
+                <x-select-field name="team_id" :options="$teams" label="Team" :required="false"
+                    placeholder="Select a team" />
+
                 <x-text-field label="Preferred Position" name="preferred_position"
                     value="{{ old('preferred_position') }}"
                     description="Does your player have a preffered playing position at the time of starting the season?"

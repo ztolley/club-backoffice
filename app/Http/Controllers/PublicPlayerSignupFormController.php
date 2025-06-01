@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\PlayerSignedUp;
 use App\Models\Contact;
 use App\Models\Player;
+use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -27,7 +28,11 @@ class PublicPlayerSignupFormController extends Controller
      */
     public function show()
     {
-        return view('player/signup/form', []);
+        $teams = Team::orderBy('name')->pluck('name', 'id')->toArray();
+
+        return view('player/signup/form', [
+            'teams' => $teams,
+        ]);
     }
 
     /**
@@ -40,16 +45,17 @@ class PublicPlayerSignupFormController extends Controller
     public function submit(Request $request)
     {
         $playerData = $request->validate([
-            'name' => 'required|string|max:255',
-            'fan' => 'required|numeric',
-            'dob' => 'required|date',
-            'preferred_position' => 'nullable|string|max:255',
-            'other_positions' => 'nullable|string|max:255',
-            'medical_conditions' => 'nullable|string',
-            'injuries' => 'nullable|string',
             'additional_info' => 'nullable|string',
-            'allowed_marketing' => 'nullable|boolean',
             'agreed_parent_code' => 'boolean',
+            'allowed_marketing' => 'nullable|boolean',
+            'dob' => 'required|date',
+            'fan' => 'required|numeric',
+            'injuries' => 'nullable|string',
+            'medical_conditions' => 'nullable|string',
+            'name' => 'required|string|max:255',
+            'other_positions' => 'nullable|string|max:255',
+            'preferred_position' => 'nullable|string|max:255',
+            'team_id' => 'nullable|string|max:255',
         ]);
 
         $playerData['allowed_marketing'] = $playerData['allowed_marketing'] ?? false;

@@ -502,3 +502,53 @@ white-space: nowrap;
 .in-iframe .hide-in-iframe {
     display: none !important;
 }
+
+
+.forms-field-select select {
+    display: block;
+
+    font-size: var(--forms-field-size-font-size);
+    font-family: inherit;
+    font-style: normal;
+    font-weight: 400;
+
+    color: var(--forms-field-text-color);
+
+    background-color: var(--forms-field-background-color);
+    background-clip: padding-box;
+
+    border-radius: var(--forms-field-border-radius);
+    border-width: var(--forms-field-border-size);
+    border-style: var(--forms-field-border-style);
+    border-color: var(--forms-field-border-color);
+
+    box-sizing: border-box;
+    max-width: 66%;
+
+    margin: 0;
+    padding: 0 var(--forms-field-size-padding-h);
+    height: var(--forms-field-size-input-height);
+
+    line-height: 2.5rem;
+
+    box-shadow: none;
+    transition: border 0.15s, box-shadow 0.15s;
+
+    text-shadow: none;
+    text-transform: none;
+
+    outline: none;
+    overflow-clip-margin: 0px !important;
+    overflow: clip !important;
+}
+
+.forms-field-select select:focus {
+    border-width: var(--forms-field-border-size, 0);
+    border-style: solid;
+    border-color: var(--forms-button-background-color);
+    box-shadow: 0 0 0 1px var(--forms-button-background-color),
+        0px 1px 2px rgba(0, 0, 0, 0.15);
+    outline: none;
+}
+
+
