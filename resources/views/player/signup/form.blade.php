@@ -62,13 +62,14 @@
 
                 <x-text-area label="Relevant Medical Conditions" name="medical_conditions"
                     value="{{ old('medical_conditions') }}" :required="false"
-                    description="Are there any medical conditions that the club needs to be aware of (e.h. Asthma) ?" />
+                    description="Are there any medical conditions that the club should to be aware of (e.g. Asthma, ASD) ?" />
 
                 <x-text-area label="Injuries" name="injuries" value="{{ old('injuries') }}" :required="false"
                     description="Should the club be aware of any relevant injuries either current or historic? Is the player currently receiving receiving treatment (e.g. Physiotherapy)?" />
 
                 <x-text-area label="Additional Comments" name="additional_info" value="{{ old('additional_info') }}"
-                    description="Is there anything else you feel the club should be aware of?" :required="false" />
+                    description="Is there anything else you feel the club should be aware of of that the club can do to help support the player?"
+                    :required="false" />
 
 
                 <h3 class="sub-heading">Parent/Carer Contact Details</h3>
