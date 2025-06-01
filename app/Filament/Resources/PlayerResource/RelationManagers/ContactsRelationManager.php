@@ -82,9 +82,13 @@ class ContactsRelationManager extends RelationManager
                         $set('is_primary', (bool) ($record?->pivot?->is_primary ?? false));
                     })
                     ->dehydrated(true)
-                    ->saveRelationshipsUsing(function ($record, $state) {
-                        $record->pivot->is_primary = $state;
-                        $record->pivot->save();
+                    ->saveRelationshipsUsing(function ($record, $state, $livewire) {
+                        // Only update if the pivot exists (i.e., editing)
+                        if ($record->pivot) {
+                            $livewire->ownerRecord
+                                ->contacts()
+                                ->updateExistingPivot($record->id, ['is_primary' => $state]);
+                        }
                     }),
 
 
