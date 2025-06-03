@@ -11,10 +11,14 @@ class PlayerSignedUp extends Mailable
     use Queueable, SerializesModels;
 
     public $player;
+    public $team;
+    public $email;
 
-    public function __construct($player)
+    public function __construct($player, $team, $email = null)
     {
         $this->player = $player;
+        $this->team = $team;
+        $this->email = $email;
     }
 
     public function build()

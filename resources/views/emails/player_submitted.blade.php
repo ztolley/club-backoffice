@@ -27,11 +27,10 @@
 </style>
 
 <div class="container">
-    <h2>New Player Added</h2>
-
+    <h2>New Signing</h2>
     <p><strong>Name:</strong> {{ $player->name }}</p>
     <p><strong>FAN:</strong> {{ $player->fan }}</p>
-
-
-
+    <p><strong>DOB:</strong> {{ $player->dob }}</p>
+    <p><strong>Name:</strong> {{ $email ?? 'No Email' }}</p>
+    <p><strong>Team:</strong> {{ $team?->name ?? 'Team not selected' }}</p>
 </div>

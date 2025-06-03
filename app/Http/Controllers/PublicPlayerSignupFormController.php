@@ -98,8 +98,12 @@ class PublicPlayerSignupFormController extends Controller
             ]);
         }
 
+        // Get the email of the contact
+        $contact = $player->contacts()->where('is_primary', true)->first();
+        $email = $contact ? $contact->email : null;
+
         // Send email
-        Mail::send(new PlayerSignedUp($player));
+        Mail::send(new PlayerSignedUp($player, $player->team, $email));
 
         return redirect()->route('player.signup.success');
     }
