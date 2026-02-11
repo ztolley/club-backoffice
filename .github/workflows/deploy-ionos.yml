@@ -132,7 +132,11 @@ jobs:
           fi
           ${SSH_CMD} <<EOF
           set -eu
-          cd "${DEPLOY_PATH}"
+          DEPLOY_TARGET="${DEPLOY_PATH}"
+          case "$DEPLOY_TARGET" in
+            "~"|"~/"*) DEPLOY_TARGET="$HOME${DEPLOY_TARGET#\~}" ;;
+          esac
+          cd "$DEPLOY_TARGET"
           php artisan optimize:clear
           if [ ! -L public/storage ]; then
             php artisan storage:link || true
