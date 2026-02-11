@@ -20,6 +20,7 @@ test('desktop: admin can login, use nav links, open sections, and open first rec
     await page.getByRole('button', { name: /sign in/i }).click();
 
     await expect(page).toHaveURL(/\/$/);
+    await expect(page.getByRole('heading', { name: '403' })).toHaveCount(0);
 
     await expect(page.locator('a[href$="/users"]')).toBeVisible();
     await expect(page.locator('a[href$="/players"]')).toBeVisible();
@@ -51,10 +52,12 @@ test('mobile: admin can login and open key sections', async ({ page }, testInfo)
     await page.getByRole('button', { name: /sign in/i }).click();
 
     await expect(page).toHaveURL(/\/$/);
+    await expect(page.getByRole('heading', { name: '403' })).toHaveCount(0);
 
     for (const section of sections) {
         await page.goto(section.path);
         await expect(page).toHaveURL(section.path);
+        await expect(page.getByRole('heading', { name: '403' })).toHaveCount(0);
         await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     }
 });

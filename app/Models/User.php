@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -9,7 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 use App\Traits\HasUuid;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     use HasFactory, Notifiable;
     use HasRoles;
@@ -30,6 +32,11 @@ class User extends Authenticatable
     public static function canAccess(): bool
     {
         return auth()->user()?->hasRole('super_admin');
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->hasRole('super_admin');
     }
 
     /**
