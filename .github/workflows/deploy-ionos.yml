@@ -139,9 +139,21 @@ jobs:
           esac
           cd "$DEPLOY_TARGET"
 
-          PHP_BIN="${DEPLOY_PHP_BIN:-php}"
-          if ! command -v "$PHP_BIN" >/dev/null 2>&1; then
-            echo "PHP CLI binary not found: $PHP_BIN"
+          PREFERRED_PHP_BIN="$(printf '%s' "${DEPLOY_PHP_BIN:-}" | tr -d '\r' | sed -e 's/^ *//' -e 's/ *$//' -e 's/^\"//' -e 's/\"$//')"
+          PHP_BIN=""
+          for candidate in "$PREFERRED_PHP_BIN" php php8.4-cli php8.4 php84 php-cli; do
+            [ -n "$candidate" ] || continue
+            if ! command -v "$candidate" >/dev/null 2>&1; then
+              continue
+            fi
+            if [ "$("$candidate" -r 'echo PHP_SAPI;' 2>/dev/null || true)" = "cli" ]; then
+              PHP_BIN="$candidate"
+              break
+            fi
+          done
+
+          if [ -z "$PHP_BIN" ]; then
+            echo "No usable PHP CLI binary found on server."
             exit 1
           fi
 
