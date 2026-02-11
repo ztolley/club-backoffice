@@ -146,7 +146,7 @@ jobs:
 
           PREFERRED_PHP_BIN="$(printf '%s' "${DEPLOY_PHP_BIN:-}" | tr -d '\r' | sed -e 's/^ *//' -e 's/ *$//' -e 's/^\"//' -e 's/\"$//')"
           PHP_BIN=""
-          for candidate in "$PREFERRED_PHP_BIN" php php8.4-cli php8.4 php84 php-cli; do
+          for candidate in "$PREFERRED_PHP_BIN" /usr/bin/php8.4-cli /bin/php8.4-cli php8.4-cli php php8.4 php84 php-cli; do
             [ -n "$candidate" ] || continue
             if [ -x "$candidate" ]; then
               :
@@ -161,7 +161,7 @@ jobs:
 
           if [ -z "$PHP_BIN" ]; then
             echo "No usable PHP CLI binary found on server."
-            for probe in "$PREFERRED_PHP_BIN" php php8.4-cli php8.4 php84 php-cli; do
+            for probe in "$PREFERRED_PHP_BIN" /usr/bin/php8.4-cli /bin/php8.4-cli php8.4-cli php php8.4 php84 php-cli; do
               [ -n "$probe" ] || continue
               echo "probe: $probe"
               command -v "$probe" || true
