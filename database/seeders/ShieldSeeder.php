@@ -6,6 +6,7 @@ use BezhanSalleh\FilamentShield\Support\Utils;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\PermissionRegistrar;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 use App\Models\User;
@@ -31,7 +32,13 @@ class ShieldSeeder extends Seeder
         ]);
 
         Role::findOrCreate('super_admin', 'web');
-        $user->syncRoles(['super_admin']);
+        $superAdminRole = Role::findByName('super_admin', 'web');
+        $user->syncRoles([$superAdminRole]);
+
+        // Ensure the seeded admin can access the Filament panel consistently in all environments.
+        $panelUserPermission = Permission::findOrCreate('panel_user', 'web');
+        $superAdminRole->givePermissionTo($panelUserPermission);
+        $user->givePermissionTo($panelUserPermission);
 
         $this->command->info('Shield Seeding Completed.');
     }
