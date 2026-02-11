@@ -4,7 +4,7 @@ services:
             context: .
             dockerfile: Dockerfile
         working_dir: /var/www/html
-        command: sh -lc "rm -f bootstrap/cache/*.php && php artisan serve --host=0.0.0.0 --port=8000"
+        command: sh -lc "rm -f bootstrap/cache/*.php && php artisan serve --host=0.0.0.0 --port=8000 --no-reload"
         environment:
             APP_URL: http://localhost:8003
             DB_CONNECTION: mysql
