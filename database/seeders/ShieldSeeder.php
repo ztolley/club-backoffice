@@ -6,6 +6,7 @@ use BezhanSalleh\FilamentShield\Support\Utils;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\PermissionRegistrar;
+use Spatie\Permission\Models\Role;
 
 use App\Models\User;
 
@@ -22,13 +23,15 @@ class ShieldSeeder extends Seeder
         static::makeRolesWithPermissions($rolesWithPermissions);
         static::makeDirectPermissions($directPermissions);
 
-        $user = User::factory()->create([
-            'name' => 'Admin User',
+        $user = User::updateOrCreate([
             'email' => 'admin@example.com',
+        ], [
+            'name' => 'Admin User',
             'password' => Hash::make('password123'), // Use a hashed password
         ]);
 
-        $user->assignRole('super_admin');
+        Role::findOrCreate('super_admin', 'web');
+        $user->syncRoles(['super_admin']);
 
         $this->command->info('Shield Seeding Completed.');
     }

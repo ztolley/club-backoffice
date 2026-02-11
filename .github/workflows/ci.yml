@@ -1,0 +1,219 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  php-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, bcmath, pdo_sqlite, sqlite3
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Prepare environment file
+        run: cp .env.example .env
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Prepare test environment
+        run: |
+          php artisan key:generate
+          touch database/database.sqlite
+
+      - name: Run migrations
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
+          MAIL_MAILER: array
+        run: php artisan migrate --force
+
+      - name: Run PHP tests
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
+          MAIL_MAILER: array
+        run: php artisan test
+
+      - name: Composer audit
+        run: composer audit --no-interaction
+
+  frontend-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: npm audit
+        run: npm audit --audit-level=moderate
+
+  e2e-browser:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, bcmath, pdo_sqlite, sqlite3
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Prepare app for E2E
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          touch database/e2e.sqlite
+          php artisan migrate --force
+          php artisan db:seed --class=ShieldSeeder --force
+          php artisan tinker --execute="\App\Models\Team::factory()->create(); \App\Models\Player::factory()->create(); \App\Models\Applicant::factory()->create(); \App\Models\User::factory()->create();"
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/e2e.sqlite
+          CACHE_STORE: array
+          SESSION_DRIVER: file
+          QUEUE_CONNECTION: sync
+          MAIL_MAILER: array
+
+      - name: Run Laravel server
+        run: php artisan serve --host=127.0.0.1 --port=8000 > /tmp/laravel-e2e.log 2>&1 &
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/e2e.sqlite
+          CACHE_STORE: array
+          SESSION_DRIVER: file
+          QUEUE_CONNECTION: sync
+          MAIL_MAILER: array
+
+      - name: Wait for app
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:8000/login > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "App did not become ready in time."
+          exit 1
+
+      - name: Run Playwright tests
+        run: npm run test:e2e
+        env:
+          CI: true
+          E2E_BASE_URL: http://localhost:8000
+          E2E_ADMIN_EMAIL: admin@example.com
+          E2E_ADMIN_PASSWORD: password123
+
+      - name: Upload Playwright artifacts (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            playwright-report
+            test-results
+            /tmp/laravel-e2e.log
+          if-no-files-found: ignore
+
+  prod-security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      - name: Build release-like workspace (no dev files)
+        run: |
+          rm -rf /tmp/release-scan
+          mkdir -p /tmp/release-scan
+          rsync -a . /tmp/release-scan \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude ".idea" \
+            --exclude ".vscode" \
+            --exclude "node_modules" \
+            --exclude "tests" \
+            --exclude "docker" \
+            --exclude "playwright-report" \
+            --exclude "test-results" \
+            --exclude "storage/logs/*" \
+            --exclude "storage/framework/testing/*"
+
+      - name: Install production Composer dependencies
+        working-directory: /tmp/release-scan
+        run: composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Audit production Composer dependencies
+        working-directory: /tmp/release-scan
+        run: composer audit --no-interaction --no-dev
+
+      - name: Install Semgrep
+        run: python3 -m pip install --user semgrep
+
+      - name: Run static security scan on release artifact
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          semgrep --config p/security-audit --error /tmp/release-scan

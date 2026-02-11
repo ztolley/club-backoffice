@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "ms-playwright.playwright",
+        "recca0120.vscode-phpunit",
+        "xdebug.php-debug",
+        "bmewburn.vscode-intelephense-client",
+        "onecentlin.laravel-blade",
+        "ms-azuretools.vscode-docker",
+        "editorconfig.editorconfig"
+    ]
+}
