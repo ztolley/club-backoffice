@@ -4,7 +4,7 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "test:e2e": "playwright test"
+        "test:e2e": "env -u NO_COLOR playwright test"
     },
     "devDependencies": {
         "@playwright/test": "^1.55.1",
