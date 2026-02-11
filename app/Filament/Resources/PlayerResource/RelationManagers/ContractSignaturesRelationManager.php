@@ -5,7 +5,8 @@ namespace App\Filament\Resources\PlayerResource\RelationManagers;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
+use Filament\Actions;
+use Filament\Schemas\Schema;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
@@ -16,9 +17,9 @@ class ContractSignaturesRelationManager extends RelationManager
 {
     protected static string $relationship = 'contractSignatures';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 TextInput::make('name')
                     ->maxLength(255)
@@ -65,7 +66,7 @@ class ContractSignaturesRelationManager extends RelationManager
                 //
             ])
             ->actions([
-                Tables\Actions\DeleteAction::make(),
+                Actions\DeleteAction::make(),
             ])
         ;
     }
