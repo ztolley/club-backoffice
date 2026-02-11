@@ -119,6 +119,39 @@ GitHub Actions is configured to run on every push to `main` and every pull reque
 
 Dependabot is also configured for weekly updates for Composer, npm, and GitHub Actions dependencies.
 
+## Branch deployment (IONOS)
+
+A deployment workflow is included at `.github/workflows/deploy-ionos.yml`.
+
+Current trigger (for testing):
+- runs on every push to non-`main` branches
+- can also be run manually via `workflow_dispatch`
+
+The workflow:
+- installs production Composer dependencies (`--no-dev`)
+- builds frontend assets (`npm run build`)
+- creates a release-like artifact
+- syncs files to your server over SSH/rsync
+- runs post-deploy Laravel commands on the server:
+  - `php artisan optimize:clear`
+  - `php artisan storage:link` (if missing)
+  - optional `php artisan migrate --force` when enabled
+  - `php artisan config:cache`
+  - `php artisan route:cache`
+  - `php artisan view:cache`
+
+Required GitHub repository secrets:
+- `DEPLOY_SSH_HOST`
+- `DEPLOY_SSH_PORT` (optional, defaults to `22`)
+- `DEPLOY_SSH_USER`
+- `DEPLOY_SSH_PRIVATE_KEY`
+- `DEPLOY_PATH` (e.g. `~/club-backoffice`)
+- `DEPLOY_RUN_MIGRATIONS` (optional: set to `true` to run migrations during deploy)
+
+Notes:
+- keep your server `.env` outside GitHub; this workflow does not upload `.env` files
+- document root should remain pointed at `~/club-backoffice/public`
+
 ## Security scanning notes
 
 Enlightn currently does not support Laravel 12 in released packages, so this project uses a production-artifact scan in CI as a fallback.

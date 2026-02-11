@@ -1,0 +1,120 @@
+name: Deploy (IONOS)
+
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore:
+      - main
+
+concurrency:
+  group: deploy-ionos-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate required secrets
+        env:
+          DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          DEPLOY_SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          for name in DEPLOY_SSH_HOST DEPLOY_SSH_USER DEPLOY_SSH_PRIVATE_KEY DEPLOY_PATH; do
+            if [ -z "${!name}" ]; then
+              echo "Missing required secret: $name"
+              exit 1
+            fi
+          done
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, bcmath, pdo_mysql
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install production PHP dependencies
+        run: composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Build deploy artifact
+        run: |
+          rm -rf /tmp/deploy-artifact
+          mkdir -p /tmp/deploy-artifact
+          rsync -a . /tmp/deploy-artifact \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude ".idea" \
+            --exclude ".vscode" \
+            --exclude "node_modules" \
+            --exclude "tests" \
+            --exclude "docker" \
+            --exclude "playwright-report" \
+            --exclude "test-results" \
+            --exclude ".env" \
+            --exclude ".env.*" \
+            --exclude "storage/logs/*" \
+            --exclude "storage/framework/testing/*"
+
+      - name: Setup SSH
+        env:
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
+        run: |
+          mkdir -p ~/.ssh
+          printf "%s" "$DEPLOY_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p "${DEPLOY_SSH_PORT:-22}" -H "$DEPLOY_SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Sync files to server
+        env:
+          DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
+          DEPLOY_SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          rsync -az \
+            -e "ssh -p ${DEPLOY_SSH_PORT:-22}" \
+            /tmp/deploy-artifact/ \
+            "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}:${DEPLOY_PATH}/"
+
+      - name: Run post-deploy Laravel commands
+        env:
+          DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
+          DEPLOY_SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          DEPLOY_RUN_MIGRATIONS: ${{ secrets.DEPLOY_RUN_MIGRATIONS }}
+        run: |
+          ssh -p "${DEPLOY_SSH_PORT:-22}" "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}" <<EOF
+          set -eu
+          cd "${DEPLOY_PATH}"
+          php artisan optimize:clear
+          if [ ! -L public/storage ]; then
+            php artisan storage:link || true
+          fi
+          if [ "${DEPLOY_RUN_MIGRATIONS:-false}" = "true" ]; then
+            php artisan migrate --force
+          fi
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          EOF
