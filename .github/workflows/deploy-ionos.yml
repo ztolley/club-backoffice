@@ -183,4 +183,10 @@ jobs:
           "$PHP_BIN" artisan config:cache
           "$PHP_BIN" artisan route:cache
           "$PHP_BIN" artisan view:cache
+
+          # Lock filesystem permissions after deploy.
+          find . -type d -exec chmod 755 {} +
+          find . -type f -exec chmod 644 {} +
+          chmod -R 775 storage bootstrap/cache
+          chmod 444 public/index.php
           EOF

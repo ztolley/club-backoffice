@@ -23,4 +23,21 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+
+    # Block common WordPress probe paths.
+    RewriteRule ^(wp-admin(?:/.*)?|wp-login\.php|xmlrpc\.php|wp-content(?:/.*)?|wp-includes(?:/.*)?)$ - [F,L,NC]
+
+    # Block execution attempts from user-uploaded storage paths.
+    RewriteCond %{REQUEST_URI} ^/storage/.*\.(php[0-9]?|phtml?|phar|pht|phtm)$ [NC]
+    RewriteRule ^ - [F,L]
+
+    # Block dotfiles but allow ACME challenge path.
+    RewriteCond %{REQUEST_URI} !^/\.well-known/ [NC]
+    RewriteRule "(^|/)\." - [F,L]
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Security headers
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
 </IfModule>
