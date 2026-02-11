@@ -138,12 +138,15 @@ jobs:
             "~"|"~/"*) DEPLOY_TARGET="$HOME${DEPLOY_TARGET#\~}" ;;
           esac
           cd "$DEPLOY_TARGET"
+          export PATH="$HOME/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 
           PREFERRED_PHP_BIN="$(printf '%s' "${DEPLOY_PHP_BIN:-}" | tr -d '\r' | sed -e 's/^ *//' -e 's/ *$//' -e 's/^\"//' -e 's/\"$//')"
           PHP_BIN=""
           for candidate in "$PREFERRED_PHP_BIN" php php8.4-cli php8.4 php84 php-cli; do
             [ -n "$candidate" ] || continue
-            if ! command -v "$candidate" >/dev/null 2>&1; then
+            if [ -x "$candidate" ]; then
+              :
+            elif ! command -v "$candidate" >/dev/null 2>&1; then
               continue
             fi
             if [ "$("$candidate" -r 'echo PHP_SAPI;' 2>/dev/null || true)" = "cli" ]; then
