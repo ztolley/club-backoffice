@@ -127,9 +127,9 @@ jobs:
           DEPLOY_RUN_MIGRATIONS: ${{ secrets.DEPLOY_RUN_MIGRATIONS }}
         run: |
           if [ -n "${DEPLOY_SSH_PRIVATE_KEY}" ]; then
-            SSH_CMD="ssh -p ${DEPLOY_SSH_PORT:-22} ${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}"
+            SSH_CMD="ssh -tt -p ${DEPLOY_SSH_PORT:-22} ${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}"
           else
-            SSH_CMD="sshpass -p ${DEPLOY_SSH_PASSWORD} ssh -p ${DEPLOY_SSH_PORT:-22} ${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}"
+            SSH_CMD="sshpass -p ${DEPLOY_SSH_PASSWORD} ssh -tt -p ${DEPLOY_SSH_PORT:-22} ${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}"
           fi
           ${SSH_CMD} <<EOF
           set -eu
