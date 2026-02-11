@@ -36,4 +36,25 @@ php artisan migrate
 
 ## Development
 
-To develop code ensure PHP is locally installed and use `php artisan serve`
+This project can be run fully in Docker for local development.
+
+1. Start services:
+```bash
+docker compose up --build
+```
+
+2. Run first-time setup (in a second terminal):
+```bash
+docker compose exec -T app composer install
+docker compose exec -T app php artisan key:generate
+docker compose exec -T app php artisan migrate:fresh
+docker compose exec -T app php artisan db:seed --class=ShieldSeeder
+docker compose exec -T app php artisan db:seed
+docker compose exec -T app php artisan storage:link
+```
+
+3. Open:
+- App: `http://localhost:8003`
+- Vite dev server (HMR): `http://localhost:5173`
+
+Code changes in the project directory are mounted directly into containers, so PHP and Blade changes are visible on refresh and frontend assets update through Vite.
