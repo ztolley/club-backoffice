@@ -142,10 +142,6 @@ jobs:
             "~"|"~/"*) DEPLOY_TARGET="$HOME${DEPLOY_TARGET#\~}" ;;
           esac
           cd "$DEPLOY_TARGET"
-          if [ -f "$HOME/.profile" ]; then . "$HOME/.profile"; fi
-          if [ -f "$HOME/.bash_profile" ]; then . "$HOME/.bash_profile"; fi
-          if [ -f "$HOME/.bashrc" ]; then . "$HOME/.bashrc"; fi
-          shopt -s expand_aliases || true
           export PATH="$HOME/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 
           PREFERRED_PHP_BIN="$(printf '%s' "${DEPLOY_PHP_BIN:-}" | tr -d '\r' | sed -e 's/^ *//' -e 's/ *$//' -e 's/^\"//' -e 's/\"$//')"
