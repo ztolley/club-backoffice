@@ -6,7 +6,7 @@
     "keywords": ["laravel", "framework", "football"],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
+        "php": "^8.4",
         "aws/aws-sdk-php": "^3.342",
         "bezhansalleh/filament-shield": "^3.3",
         "filament/filament": "^3.3",
@@ -67,6 +67,9 @@
         }
     },
     "config": {
+        "platform": {
+            "php": "8.4.0"
+        },
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
