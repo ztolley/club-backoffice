@@ -23,14 +23,19 @@ jobs:
           DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
           DEPLOY_SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
           DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          DEPLOY_SSH_PASSWORD: ${{ secrets.DEPLOY_SSH_PASSWORD }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
-          for name in DEPLOY_SSH_HOST DEPLOY_SSH_USER DEPLOY_SSH_PRIVATE_KEY DEPLOY_PATH; do
+          for name in DEPLOY_SSH_HOST DEPLOY_SSH_USER DEPLOY_PATH; do
             if [ -z "${!name}" ]; then
               echo "Missing required secret: $name"
               exit 1
             fi
           done
+          if [ -z "${DEPLOY_SSH_PRIVATE_KEY}" ] && [ -z "${DEPLOY_SSH_PASSWORD}" ]; then
+            echo "Missing auth secret: set DEPLOY_SSH_PRIVATE_KEY or DEPLOY_SSH_PASSWORD"
+            exit 1
+          fi
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -80,31 +85,53 @@ jobs:
           DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
         run: |
           mkdir -p ~/.ssh
-          printf "%s" "$DEPLOY_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          if [ -n "${DEPLOY_SSH_PRIVATE_KEY}" ]; then
+            printf "%s" "$DEPLOY_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+          fi
           ssh-keyscan -p "${DEPLOY_SSH_PORT:-22}" -H "$DEPLOY_SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Install sshpass (for password auth)
+        if: ${{ secrets.DEPLOY_SSH_PASSWORD != '' }}
+        run: sudo apt-get update && sudo apt-get install -y sshpass
 
       - name: Sync files to server
         env:
           DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
           DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
           DEPLOY_SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          DEPLOY_SSH_PASSWORD: ${{ secrets.DEPLOY_SSH_PASSWORD }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
-          rsync -az \
-            -e "ssh -p ${DEPLOY_SSH_PORT:-22}" \
-            /tmp/deploy-artifact/ \
-            "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}:${DEPLOY_PATH}/"
+          if [ -n "${DEPLOY_SSH_PRIVATE_KEY}" ]; then
+            rsync -az \
+              -e "ssh -p ${DEPLOY_SSH_PORT:-22}" \
+              /tmp/deploy-artifact/ \
+              "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}:${DEPLOY_PATH}/"
+          else
+            sshpass -p "${DEPLOY_SSH_PASSWORD}" rsync -az \
+              -e "ssh -p ${DEPLOY_SSH_PORT:-22}" \
+              /tmp/deploy-artifact/ \
+              "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}:${DEPLOY_PATH}/"
+          fi
 
       - name: Run post-deploy Laravel commands
         env:
           DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
           DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
           DEPLOY_SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          DEPLOY_SSH_PASSWORD: ${{ secrets.DEPLOY_SSH_PASSWORD }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
           DEPLOY_RUN_MIGRATIONS: ${{ secrets.DEPLOY_RUN_MIGRATIONS }}
         run: |
-          ssh -p "${DEPLOY_SSH_PORT:-22}" "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}" <<EOF
+          if [ -n "${DEPLOY_SSH_PRIVATE_KEY}" ]; then
+            SSH_CMD="ssh -p ${DEPLOY_SSH_PORT:-22} ${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}"
+          else
+            SSH_CMD="sshpass -p ${DEPLOY_SSH_PASSWORD} ssh -p ${DEPLOY_SSH_PORT:-22} ${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}"
+          fi
+          ${SSH_CMD} <<EOF
           set -eu
           cd "${DEPLOY_PATH}"
           php artisan optimize:clear

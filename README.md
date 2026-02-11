@@ -144,7 +144,7 @@ Required GitHub repository secrets:
 - `DEPLOY_SSH_HOST`
 - `DEPLOY_SSH_PORT` (optional, defaults to `22`)
 - `DEPLOY_SSH_USER`
-- `DEPLOY_SSH_PRIVATE_KEY`
+- `DEPLOY_SSH_PRIVATE_KEY` (recommended) or `DEPLOY_SSH_PASSWORD`
 - `DEPLOY_PATH` (e.g. `~/club-backoffice`)
 - `DEPLOY_RUN_MIGRATIONS` (optional: set to `true` to run migrations during deploy)
 
