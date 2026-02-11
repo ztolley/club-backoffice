@@ -19,7 +19,7 @@ return new class extends Migration
 
         // Remove foreign key index from applicants table
         Schema::table('applicants', function (Blueprint $table) {
-            $table->dropForeign('applicants_player_id_foreign');
+            $table->dropForeign(['player_id']);
             $table->dropColumn('player_id');
         });
     }

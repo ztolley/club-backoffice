@@ -7,7 +7,7 @@ use Filament\Widgets\ChartWidget;
 
 class PlayerAgeGroupBarChart extends ChartWidget
 {
-    protected static ?string $heading = 'Players by Team';
+    protected ?string $heading = 'Players by Team';
 
     protected function getData(): array
     {

@@ -36,4 +36,90 @@ php artisan migrate
 
 ## Development
 
-To develop code ensure PHP is locally installed and use `php artisan serve`
+This project can be run fully in Docker for local development.
+
+1. Start services:
+```bash
+docker compose up --build
+```
+
+2. The app container now bootstraps itself on startup:
+- runs `php artisan migrate --force`
+- runs `php artisan db:seed --class=ShieldSeeder --force`
+- runs `php artisan db:seed --class=DatabaseSeeder --force` if teams/players/applicants are empty
+- creates `public/storage` symlink if missing
+
+3. On first run, only install Composer dependencies manually if needed:
+```bash
+docker compose exec -T app php artisan key:generate
+```
+
+4. Open:
+- App: `http://localhost:8003`
+- Vite dev server (HMR): `http://localhost:5173`
+
+Code changes in the project directory are mounted directly into containers, so PHP and Blade changes are visible on refresh and frontend assets update through Vite.
+
+## Running tests
+
+Run tests in Docker (recommended), so PHP version and extensions match the app runtime.
+
+```bash
+docker compose exec app php artisan test
+```
+
+Useful test commands:
+
+```bash
+docker compose exec app php artisan test --filter=AdminPanelSmokeTest
+docker compose exec app php artisan test tests/Feature/AdminPanelSmokeTest.php
+docker compose exec app php artisan test --parallel
+```
+
+For browser tests with the VS Code Playwright extension, use:
+
+```bash
+npm run test:e2e
+```
+
+## Recommended VS Code extensions
+
+This repo includes extension recommendations in `.vscode/extensions.json`.
+
+- `ms-playwright.playwright` (browser E2E test runner and traces)
+- `recca0120.vscode-phpunit` (run `php artisan test` from VS Code Testing UI, in Docker)
+- `xdebug.php-debug` (PHP step debugging)
+- `bmewburn.vscode-intelephense-client` (PHP IntelliSense)
+- `onecentlin.laravel-blade` (Blade syntax support)
+- `ms-azuretools.vscode-docker` (Docker/Compose tooling)
+- `editorconfig.editorconfig` (consistent formatting rules)
+
+After installing recommended extensions:
+- open **Command Palette -> Extensions: Show Recommended Extensions**
+- open the **Testing** panel in VS Code to run PHPUnit and Playwright tests
+
+## Automated checks
+
+GitHub Actions is configured to run on every push to `main` and every pull request.
+
+- PHP job:
+  - installs Composer dependencies
+  - runs migrations against SQLite
+  - runs `php artisan test`
+  - runs `composer audit`
+- Frontend job:
+  - installs npm dependencies
+  - runs `npm run build`
+  - runs `npm audit`
+- Production security job:
+  - builds a release-like copy of the repo (excluding dev-only folders)
+  - runs `composer install --no-dev`
+  - runs `composer audit --no-dev`
+  - runs Semgrep (`p/security-audit`) against the release artifact
+
+Dependabot is also configured for weekly updates for Composer, npm, and GitHub Actions dependencies.
+
+## Security scanning notes
+
+Enlightn currently does not support Laravel 12 in released packages, so this project uses a production-artifact scan in CI as a fallback.
+Once Enlightn adds Laravel 12 support, it can be added as an additional scanner.

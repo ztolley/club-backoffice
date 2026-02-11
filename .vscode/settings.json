@@ -1,0 +1,10 @@
+{
+    "Laravel.phpCommand": "docker compose exec -T -w /var/www/html app php \"{code}\"",
+    "Laravel.phpEnvironment": "docker",
+    "phpunit.command": "docker compose exec -T app ${php} ${phpargs} ${phpunit} ${phpunitargs}",
+    "phpunit.php": "php",
+    "phpunit.phpunit": "artisan test",
+    "phpunit.paths": {
+        "${workspaceFolder}": "/var/www/html"
+    }
+}
