@@ -33,12 +33,13 @@ class ShieldSeeder extends Seeder
 
         Role::findOrCreate('super_admin', 'web');
         $superAdminRole = Role::findByName('super_admin', 'web');
+        $coachRole = Role::findByName('coach', 'web');
         $user->syncRoles([$superAdminRole]);
 
-        // Ensure the seeded admin can access the Filament panel consistently in all environments.
-        $panelUserPermission = Permission::findOrCreate('panel_user', 'web');
-        $superAdminRole->givePermissionTo($panelUserPermission);
-        $user->givePermissionTo($panelUserPermission);
+        // Grant panel entry via an explicit permission rather than hardcoded roles.
+        $panelAccessPermission = Permission::findOrCreate('access_admin_panel', 'web');
+        $superAdminRole->givePermissionTo($panelAccessPermission);
+        $coachRole->givePermissionTo($panelAccessPermission);
 
         $this->command->info('Shield Seeding Completed.');
     }
