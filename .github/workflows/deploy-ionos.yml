@@ -92,7 +92,6 @@ jobs:
           ssh-keyscan -p "${DEPLOY_SSH_PORT:-22}" -H "$DEPLOY_SSH_HOST" >> ~/.ssh/known_hosts
 
       - name: Install sshpass (for password auth)
-        if: ${{ secrets.DEPLOY_SSH_PASSWORD != '' }}
         run: sudo apt-get update && sudo apt-get install -y sshpass
 
       - name: Sync files to server
