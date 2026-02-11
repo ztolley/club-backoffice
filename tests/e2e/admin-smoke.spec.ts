@@ -17,19 +17,17 @@ test('admin can login, open key sections, and open first record', async ({ page 
     await expect(page.locator('a[href$="/teams"]')).toBeVisible();
     await expect(page.locator('a[href$="/applicants"]')).toBeVisible();
 
-    const sections: Array<{ path: string; detailPathPattern: RegExp }> = [
-        { path: '/users', detailPathPattern: /\/users\/.+\/edit$/ },
-        { path: '/players', detailPathPattern: /\/players\/.+\/edit$/ },
-        { path: '/teams', detailPathPattern: /\/teams\/.+\/view$/ },
-        { path: '/applicants', detailPathPattern: /\/applicants\/.+\/edit$/ },
+    const sections: Array<{ path: string; detailPathPattern: RegExp; recordLinkSelector: string }> = [
+        { path: '/users', detailPathPattern: /\/users\/.+\/edit$/, recordLinkSelector: 'a[href*="/users/"][href$="/edit"]' },
+        { path: '/players', detailPathPattern: /\/players\/.+\/edit$/, recordLinkSelector: 'a[href*="/players/"][href$="/edit"]' },
+        { path: '/teams', detailPathPattern: /\/teams\/.+\/view$/, recordLinkSelector: 'a[href*="/teams/"][href$="/view"]' },
+        { path: '/applicants', detailPathPattern: /\/applicants\/.+\/edit$/, recordLinkSelector: 'a[href*="/applicants/"][href$="/edit"]' },
     ];
 
     for (const section of sections) {
         await page.goto(section.path);
         await expect(page).toHaveURL(section.path);
-        await expect(page.locator('table').first()).toBeVisible();
-
-        const firstRecordLink = page.locator('table tbody tr a').first();
+        const firstRecordLink = page.locator(section.recordLinkSelector).first();
         await expect(firstRecordLink).toBeVisible();
         await firstRecordLink.click();
         await expect(page).toHaveURL(section.detailPathPattern);
