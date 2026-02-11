@@ -146,6 +146,7 @@ Required GitHub repository secrets:
 - `DEPLOY_SSH_USER`
 - `DEPLOY_SSH_PRIVATE_KEY` (recommended) or `DEPLOY_SSH_PASSWORD`
 - `DEPLOY_PATH` (e.g. `~/club-backoffice`)
+- `DEPLOY_PHP_BIN` (optional, defaults to `php`; set this if your host uses a specific CLI binary like `php8.4-cli`)
 - `DEPLOY_RUN_MIGRATIONS` (optional: set to `true` to run migrations during deploy)
 
 Notes:

@@ -123,6 +123,7 @@ jobs:
           DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
           DEPLOY_SSH_PASSWORD: ${{ secrets.DEPLOY_SSH_PASSWORD }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          DEPLOY_PHP_BIN: ${{ secrets.DEPLOY_PHP_BIN }}
           DEPLOY_RUN_MIGRATIONS: ${{ secrets.DEPLOY_RUN_MIGRATIONS }}
         run: |
           if [ -n "${DEPLOY_SSH_PRIVATE_KEY}" ]; then
@@ -137,14 +138,21 @@ jobs:
             "~"|"~/"*) DEPLOY_TARGET="$HOME${DEPLOY_TARGET#\~}" ;;
           esac
           cd "$DEPLOY_TARGET"
-          php artisan optimize:clear
+
+          PHP_BIN="${DEPLOY_PHP_BIN:-php}"
+          if ! command -v "$PHP_BIN" >/dev/null 2>&1; then
+            echo "PHP CLI binary not found: $PHP_BIN"
+            exit 1
+          fi
+
+          "$PHP_BIN" artisan optimize:clear
           if [ ! -L public/storage ]; then
-            php artisan storage:link || true
+            "$PHP_BIN" artisan storage:link || true
           fi
           if [ "${DEPLOY_RUN_MIGRATIONS:-false}" = "true" ]; then
-            php artisan migrate --force
+            "$PHP_BIN" artisan migrate --force
           fi
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
+          "$PHP_BIN" artisan config:cache
+          "$PHP_BIN" artisan route:cache
+          "$PHP_BIN" artisan view:cache
           EOF
