@@ -141,6 +141,7 @@ jobs:
           if [ -f "$HOME/.profile" ]; then . "$HOME/.profile"; fi
           if [ -f "$HOME/.bash_profile" ]; then . "$HOME/.bash_profile"; fi
           if [ -f "$HOME/.bashrc" ]; then . "$HOME/.bashrc"; fi
+          shopt -s expand_aliases || true
           export PATH="$HOME/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 
           PREFERRED_PHP_BIN="$(printf '%s' "${DEPLOY_PHP_BIN:-}" | tr -d '\r' | sed -e 's/^ *//' -e 's/ *$//' -e 's/^\"//' -e 's/\"$//')"
@@ -160,6 +161,12 @@ jobs:
 
           if [ -z "$PHP_BIN" ]; then
             echo "No usable PHP CLI binary found on server."
+            for probe in "$PREFERRED_PHP_BIN" php php8.4-cli php8.4 php84 php-cli; do
+              [ -n "$probe" ] || continue
+              echo "probe: $probe"
+              command -v "$probe" || true
+              "$probe" -v 2>/dev/null | head -n 1 || true
+            done
             exit 1
           fi
 
