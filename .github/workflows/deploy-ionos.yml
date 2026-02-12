@@ -3,7 +3,7 @@ name: Deploy (IONOS)
 on:
   workflow_dispatch:
   push:
-    branches-ignore:
+    branches:
       - main
 
 concurrency:
