@@ -124,6 +124,13 @@ GitHub Actions is configured to run on every push to `main` and every pull reque
 
 Dependabot is also configured for weekly updates for Composer, npm, and GitHub Actions dependencies.
 
+Dependabot auto-merge is enabled for safe updates:
+- only PRs opened by Dependabot
+- only into `main`
+- only patch/minor version updates
+- major updates require manual review
+- merge happens only after required status checks pass (branch protection)
+
 ## Deployment (IONOS)
 
 A deployment workflow is included at `.github/workflows/deploy-ionos.yml`.
