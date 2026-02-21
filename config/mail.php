@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => env('MAIL_MAILER', 'smtp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -112,5 +112,9 @@ return [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
+
+    'application_to_address' => env('MAIL_APPLICATION_TO_ADDRESS', 'trials@hartlandgirlsacademy.co.uk'),
+
+    'signed_to_address' => env('MAIL_SIGNED_TO_ADDRESS', 'enquiries@hartlandgirlsacademy.co.uk'),
 
 ];

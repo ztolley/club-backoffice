@@ -187,6 +187,11 @@ Before first deploy, verify production values in your server-side `.env`:
 - `APP_URL=https://your-domain`
 - `DB_CONNECTION=mysql`
 - `DB_HOST` and `DB_PORT` match your host's internal database endpoint
+- `MAIL_MAILER=smtp`
+- `MAIL_HOST=smtp.ionos.co.uk`
+- `MAIL_PORT=587`
+- `MAIL_ENCRYPTION=tls`
+- `MAIL_USERNAME` and `MAIL_PASSWORD` use your IONOS mailbox credentials
 - `SESSION_DOMAIN=your-domain`
 - `SESSION_SECURE_COOKIE=true` (when using HTTPS)
 - `SESSION_SAME_SITE=lax` (or stricter, if appropriate)
