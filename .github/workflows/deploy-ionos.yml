@@ -17,6 +17,38 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Summarize deployed changes
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          echo "### Deployment revision" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Event: \`$EVENT_NAME\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: \`$AFTER_SHA\`" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$EVENT_NAME" = "push" ] && [ -n "$BEFORE_SHA" ] && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            echo "- Compare: \`$BEFORE_SHA..$AFTER_SHA\`" >> "$GITHUB_STEP_SUMMARY"
+            git diff --name-status "$BEFORE_SHA" "$AFTER_SHA" > /tmp/deployed-files.txt
+          else
+            echo "- Compare: single commit (\`$AFTER_SHA\`)" >> "$GITHUB_STEP_SUMMARY"
+            git show --name-status --pretty="" "$AFTER_SHA" > /tmp/deployed-files.txt
+          fi
+
+          if [ -s /tmp/deployed-files.txt ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "### Changed files" >> "$GITHUB_STEP_SUMMARY"
+            echo '```text' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/deployed-files.txt >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/deployed-files.txt
+          else
+            echo "No changed files were detected for this deployment."
+            echo "- Changed files: none detected" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Validate required secrets
         env:
