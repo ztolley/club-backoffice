@@ -38,6 +38,6 @@ class PlayersRelationManager extends RelationManager
                     Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('name', 'asc');;;
+            ->defaultSort('name', 'asc');
     }
 }

@@ -54,7 +54,7 @@ class ContactsRelationManager extends RelationManager
                                 return;
                             }
 
-                            app(\App\Services\RichTextEmailSender::class)
+                            app(RichTextEmailSender::class)
                                 ->sendToSingle($record->email, $data['subject'], $data['body']);
 
                             Notification::make()

@@ -12,10 +12,8 @@ use Filament\Schemas\Schema;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Actions;
-use Filament\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Collection;
 
 class ApplicantResource extends Resource
 {
@@ -125,7 +123,7 @@ class ApplicantResource extends Resource
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make(),
                     // Export CSV Bulk Action
-                    BulkAction::make('exportCsv')
+                    Actions\BulkAction::make('exportCsv')
                         ->label('Export as CSV')
                         ->icon('heroicon-o-arrow-down-tray')
                         ->action(function (Collection $records) {

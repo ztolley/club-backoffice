@@ -137,7 +137,7 @@ class PlayerResource extends Resource
                         return $team ? 'Team: ' . $team->name : null;
                     }),
             ])
-            ->defaultSort('name', 'asc');;
+            ->defaultSort('name', 'asc');
     }
 
     public static function getRelations(): array
