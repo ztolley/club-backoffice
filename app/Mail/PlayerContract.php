@@ -22,7 +22,7 @@ class PlayerContract extends Mailable
     public function build()
     {
         return $this->subject('New Player Contract')
-            ->to(env('MAIL_SIGNED_TO_ADDRESS', 'enquiries@hartlandgirlsacademy.co.uk'))
+            ->to(config('mail.signed_to_address'))
             ->view('emails.player_contract');
     }
 }
