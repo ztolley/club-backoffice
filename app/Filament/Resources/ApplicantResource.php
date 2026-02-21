@@ -5,9 +5,7 @@ namespace App\Filament\Resources;
 use BackedEnum;
 use App\Filament\Resources\ApplicantResource\Pages;
 use App\Models\Applicant;
-use App\Services\RichTextEmailSender;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -126,31 +124,6 @@ class ApplicantResource extends Resource
             ->bulkActions([
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make(),
-
-                    BulkAction::make('sendEmail')
-                        ->label('Send Email')
-                        ->icon('heroicon-m-envelope')
-                        ->form([
-                            TextInput::make('subject')
-                                ->required()
-                                ->label('Subject'),
-
-                            RichEditor::make('body')
-                                ->required()
-                                ->label('Email Body'),
-                        ])
-                        ->action(function (Collection $records, array $data) {
-                            app(RichTextEmailSender::class)
-                                ->sendToMany($records, $data['subject'], $data['body']);
-
-                            Notification::make()
-                                ->title('Email sent to selected applicants.')
-                                ->success()
-                                ->send();
-                        })
-                        ->deselectRecordsAfterCompletion()
-                        ->modalHeading('Compose Email')
-                        ->modalSubmitActionLabel('Send'),
                     // Export CSV Bulk Action
                     BulkAction::make('exportCsv')
                         ->label('Export as CSV')

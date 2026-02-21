@@ -20,7 +20,7 @@ class ApplicantSubmitted extends Mailable
     public function build()
     {
         return $this->subject('New Player Application Submitted')
-            ->to(env('MAIL_APPLICATION_TO_ADDRESS', 'trials@hartlandgirlsacademy.co.uk'))
+            ->to(config('mail.application_to_address'))
             ->view('emails.applicant_submitted');
     }
 }
