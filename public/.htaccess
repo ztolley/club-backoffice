@@ -6,6 +6,27 @@
     RewriteBase /
     RewriteEngine On
 
+    # ----------------------------------------------------------------------
+    # 1. SECURITY RULES (Must process before laravel)
+    # ----------------------------------------------------------------------
+
+    # Block common WordPress probe paths.
+    # Stops bots from hitting Laravel with WordPress requests
+    RewriteRule ^(wp-admin(?:/.*)?|wp-login\.php|xmlrpc\.php|wp-content(?:/.*)?|wp-includes(?:/.*)?)$ - [F,L,NC]
+
+    # Block execution attempts from user-uploaded storage paths.
+    # Prevents PHP scripts masked as images from running
+    RewriteCond %{REQUEST_URI} ^/storage/.*\.(php[0-9]?|phtml?|phar|pht|phtm)$ [NC]
+    RewriteRule ^ - [F,L]
+
+    # Block dotfiles but allow ACME challenge path (for SSL renewal).
+    RewriteCond %{REQUEST_URI} !^/\.well-known/ [NC]
+    RewriteRule "(^|/)\." - [F,L]
+
+    # ----------------------------------------------------------------------
+    # 2. STANDARD LARAVEL RULES
+    # ----------------------------------------------------------------------
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -23,17 +44,6 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
-
-    # Block common WordPress probe paths.
-    RewriteRule ^(wp-admin(?:/.*)?|wp-login\.php|xmlrpc\.php|wp-content(?:/.*)?|wp-includes(?:/.*)?)$ - [F,L,NC]
-
-    # Block execution attempts from user-uploaded storage paths.
-    RewriteCond %{REQUEST_URI} ^/storage/.*\.(php[0-9]?|phtml?|phar|pht|phtm)$ [NC]
-    RewriteRule ^ - [F,L]
-
-    # Block dotfiles but allow ACME challenge path.
-    RewriteCond %{REQUEST_URI} !^/\.well-known/ [NC]
-    RewriteRule "(^|/)\." - [F,L]
 </IfModule>
 
 <IfModule mod_headers.c>
