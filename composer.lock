@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "38c4907dee61d6ae738f3802c82f35a6",
+    "content-hash": "4a2e1b7cab46726caa5f49856688fe6c",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -128,16 +128,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.369.32",
+            "version": "3.370.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "4779292a30aa2d4a7ddfd519f80a94c2706ee64e"
+                "reference": "3cfb2c787c43efa546ba3b6b596956cbef5cdd53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4779292a30aa2d4a7ddfd519f80a94c2706ee64e",
-                "reference": "4779292a30aa2d4a7ddfd519f80a94c2706ee64e",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3cfb2c787c43efa546ba3b6b596956cbef5cdd53",
+                "reference": "3cfb2c787c43efa546ba3b6b596956cbef5cdd53",
                 "shasum": ""
             },
             "require": {
@@ -219,9 +219,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.369.32"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.370.0"
             },
-            "time": "2026-02-11T19:29:10+00:00"
+            "time": "2026-02-20T19:09:33+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
