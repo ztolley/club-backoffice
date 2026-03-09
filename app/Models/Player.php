@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-
 
 class Player extends Model
 {
@@ -23,8 +21,6 @@ class Player extends Model
     protected $casts = [
         'dob' => 'date',
         'allowed_marketing' => 'boolean',
-        'agreed_player_code' => 'boolean',
-        'agreed_parent_code' => 'boolean',
         'signed_date' => 'date',
     ];
 
@@ -43,10 +39,5 @@ class Player extends Model
         return $this->belongsToMany(Contact::class, 'contact_player')
             ->withPivot('is_primary')
             ->withTimestamps();
-    }
-
-    public function contractSignatures(): HasMany
-    {
-        return $this->hasMany(PlayerContractSignature::class);
     }
 }

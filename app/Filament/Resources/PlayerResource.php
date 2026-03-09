@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use BackedEnum;
 use App\Filament\Resources\PlayerResource\Pages;
 use App\Filament\Resources\PlayerResource\RelationManagers\ContactsRelationManager;
-use App\Filament\Resources\PlayerResource\RelationManagers\ContractSignaturesRelationManager;
 use App\Models\Player;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -58,12 +57,8 @@ class PlayerResource extends Resource
                     ->columnSpanFull()
                     ->required(),
 
-                Toggle::make('agreed_player_code')
-                    ->label('Agreed to Player Code of Conduct')
-                    ->required(),
-                Toggle::make('agreed_parent_code')
-                    ->label('Agreed to Parent Code of Conduct')
-                    ->required(),
+                DatePicker::make('signed_date')
+                    ->label('Signup Date'),
 
                 Select::make('team_id')
                     ->label('Primary Team')
@@ -85,8 +80,6 @@ class PlayerResource extends Resource
                             ->orderBy('name')
                             ->pluck('name', 'id');
                     }),
-
-                DatePicker::make('signed_date'),
             ]);
     }
 
@@ -144,7 +137,6 @@ class PlayerResource extends Resource
     {
         return [
             ContactsRelationManager::class,
-            ContractSignaturesRelationManager::class,
         ];
     }
 

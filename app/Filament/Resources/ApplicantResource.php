@@ -6,6 +6,7 @@ use BackedEnum;
 use App\Filament\Resources\ApplicantResource\Pages;
 use App\Models\Applicant;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -47,6 +48,12 @@ class ApplicantResource extends Resource
                 Textarea::make('playing_experience')->columnSpanFull(),
                 TextInput::make('preferred_position'),
                 TextInput::make('other_positions'),
+                Select::make('preferred_foot')
+                    ->options([
+                        'Right' => 'Right',
+                        'Left' => 'Left',
+                        'Both' => 'Both',
+                    ]),
                 TextInput::make('age_groups'),
                 Textarea::make('how_hear')
                     ->label('How did you hear about us?')
@@ -94,6 +101,10 @@ class ApplicantResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
+                TextColumn::make('preferred_foot')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('age_groups')
                     ->sortable()
                     ->searchable()
@@ -142,6 +153,7 @@ class ApplicantResource extends Resource
                                     'Playing Experience' => $record->playing_experience,
                                     'Preferred Position' => $record->preferred_position,
                                     'Other Positions' => $record->other_positions,
+                                    'Preferred Foot' => $record->preferred_foot,
                                     'Age Groups' => $record->age_groups,
                                     'How Did You Hear' => $record->how_hear,
                                     'Medical Conditions' => $record->medical_conditions,

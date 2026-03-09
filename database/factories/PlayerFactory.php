@@ -29,8 +29,6 @@ class PlayerFactory extends Factory
 
         return [
             'additional_info' => fake()->text(),
-            'agreed_parent_code' => fake()->boolean(),
-            'agreed_player_code' => fake()->boolean(),
             'allowed_marketing' => fake()->boolean(),
             'dob' => fake()->date(),
             'fan' => fake()->unique()->numberBetween(100000, 999999),
@@ -39,7 +37,7 @@ class PlayerFactory extends Factory
             'name' => fake()->name(),
             'other_positions' => "",
             'preferred_position' => $preferredPosition,
-            'signed_date' => now(),
+            'signed_date' => now()->toDateString(),
             'team_id' => Team::factory()
         ];
     }

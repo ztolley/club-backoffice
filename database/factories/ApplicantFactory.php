@@ -23,6 +23,8 @@ class ApplicantFactory extends Factory
         $email = 'zac+' . static::$emailCounter++ . '@thetolleys.com';
         $ageGroups = ['U12', 'U13', 'U14', 'U15', 'U16'];
         $ageGroup = $ageGroups[array_rand($ageGroups)];
+        $preferredFeet = ['Right', 'Left', 'Both'];
+        $preferredFoot = $preferredFeet[array_rand($preferredFeet)];
 
         $preferredPositions = ['CB', 'RB', 'LB', 'CM', 'RM', 'LM', 'CF', 'RW', 'LW'];
         $preferredPosition = $preferredPositions[array_rand($preferredPositions)];
@@ -41,6 +43,7 @@ class ApplicantFactory extends Factory
             'playing_experience' => fake()->text(),
             'preferred_position' => $preferredPosition,
             'other_positions' => "",
+            'preferred_foot' => $preferredFoot,
             'age_groups' => $ageGroup,
             'how_hear' => fake()->text(),
             'medical_conditions' => fake()->text(),
