@@ -14,7 +14,7 @@
 
 <body>
     <div class="container">
-        <p>Hartland Girls Academy are actively inviting applications for the 25/26 season. Please provide your details
+        <p>Hartland Girls Academy are actively inviting applications for the 26/27 season. Please provide your details
             below and we will be in contact in the coming weeks with trial dates and locations.</p>
         <form method="POST" action="{{ route('application.submit') }}" class="forms-form forms-validate">
             @csrf
@@ -61,8 +61,8 @@
                     :required="false" />
 
 
-                <x-text-field label="Applicable Age Groups (25/26)" name="age_groups" value="{{ old('age_groups') }}"
-                    :required="false" description="U10,11,12,13,14,15,16,18 or open age" />
+                <x-text-field label="Applicable Age Groups (26/27)" name="age_groups" value="{{ old('age_groups') }}"
+                    :required="false" description="U12,13,14,15,16,18 or open age" />
 
                 <x-text-area label="How Did You Hear About Us" name="how_hear" value="{{ old('how_hear') }}"
                     :required="false" />
