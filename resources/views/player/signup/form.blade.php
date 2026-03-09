@@ -123,20 +123,33 @@
                     </fieldset>
 
                     <fieldset>
-                        <legend>Parent Code of Conduct</legend>
+                        <legend>Player Agreement <span class="forms-required-label">*</span></legend>
                         <div class="forms-field-checkbox">
-                            <ul>
-                                <li>
-                                    <input type="checkbox" id="agreed_parent_code" name="agreed_parent_code"
-                                        value="1" {{ old('agreed_parent_code') ? 'checked' : '' }} required>
-                                    <label for="agreed_parent_code">
-                                        I agree to adhere and to embrace the terms outlined in the Hartland Girls
-                                        Academy
-                                        <a href="https://www.hartlandgirlsacademy.co.uk/club-welfare/player-parent-code-of-conduct/#PARENT"
-                                            target="_blank">Parent Code of Conduct.</a>
-                                    </label>
-                                </li>
-                            </ul>
+                            <input type="checkbox" id="player_code_of_conduct_agreement"
+                                name="player_code_of_conduct_agreement" value="1"
+                                {{ old('player_code_of_conduct_agreement') ? 'checked' : '' }} required>
+                            <label for="player_code_of_conduct_agreement">
+                                I agree to adhere and to embrace the Hartland Girls
+                                Academy
+                                <a href="https://www.hartlandgirlsacademy.co.uk/club-welfare/player-parent-code-of-conduct/"
+                                    target="_blank" rel="noopener noreferrer">Player Code of Conduct</a>.
+                            </label>
+
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Parent Agreement <span class="forms-required-label">*</span></legend>
+                        <div class="forms-field-checkbox">
+                            <input type="checkbox" id="parent_code_of_conduct_agreement"
+                                name="parent_code_of_conduct_agreement" value="1"
+                                {{ old('parent_code_of_conduct_agreement') ? 'checked' : '' }} required>
+                            <label for="parent_code_of_conduct_agreement">
+                                I agree to adhere and to embrace the Hartland Girls
+                                Academy
+                                <a href="https://www.hartlandgirlsacademy.co.uk/club-welfare/player-parent-code-of-conduct/"
+                                    target="_blank" rel="noopener noreferrer">Parent Code of Conduct</a>.
+                            </label>
                         </div>
                     </fieldset>
                 </div>

@@ -25,6 +25,7 @@ class ApplicantIngest extends Command
         'other_playing_experience' => 'playing_experience',
         'preferred_position' => 'preferred_position',
         'other_positions' => 'other_positions',
+        'preferred_foot' => 'preferred_foot',
         'applicable_age_groups_25_26_' => 'age_groups',
         'how_did_you_hear_about_us_' => 'how_hear',
         'relevant_medical_conditions' => 'medical_conditions',

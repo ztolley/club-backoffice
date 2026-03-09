@@ -41,6 +41,7 @@
     <p><strong>Playing Experience:</strong> {{ $applicant->playing_experience }}</p>
     <p><strong>Preferred Position:</strong> {{ $applicant->preferred_position }}</p>
     <p><strong>Other Positions:</strong> {{ $applicant->other_positions }}</p>
+    <p><strong>Preferred Foot:</strong> {{ $applicant->preferred_foot }}</p>
     <p><strong>Applicable Age Groups:</strong> {{ $applicant->age_groups }}</p>
     <p><strong>How Did You Hear About Us:</strong> {{ $applicant->how_hear }}</p>
     <p><strong>Relevant Medical Conditions:</strong> {{ $applicant->medical_conditions }}</p>

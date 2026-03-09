@@ -41,6 +41,7 @@ class PublicPlayerApplicationFormController extends Controller
             'playing_experience' => 'nullable|string',
             'preferred_position' => 'nullable|string|max:255',
             'other_positions' => 'nullable|string|max:255',
+            'preferred_foot' => 'nullable|in:Right,Left,Both',
             'age_groups' => 'nullable|string|max:255',
             'how_hear' => 'nullable|string',
             'medical_conditions' => 'nullable|string',

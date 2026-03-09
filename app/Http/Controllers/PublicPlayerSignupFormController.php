@@ -44,9 +44,13 @@ class PublicPlayerSignupFormController extends Controller
      */
     public function submit(Request $request)
     {
+        $request->validate([
+            'player_code_of_conduct_agreement' => 'accepted',
+            'parent_code_of_conduct_agreement' => 'accepted',
+        ]);
+
         $playerData = $request->validate([
             'additional_info' => 'nullable|string',
-            'agreed_parent_code' => 'boolean',
             'allowed_marketing' => 'nullable|boolean',
             'dob' => 'required|date',
             'fan' => 'required|numeric',
@@ -59,7 +63,7 @@ class PublicPlayerSignupFormController extends Controller
         ]);
 
         $playerData['allowed_marketing'] = $playerData['allowed_marketing'] ?? false;
-        $playerData['agreed_player_code'] = false;
+        $playerData['signed_date'] = now()->toDateString();
 
         // Validate contacts
         $contacts = $request->input('contacts', []);
