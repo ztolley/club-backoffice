@@ -27,7 +27,7 @@
 </style>
 
 <div class="container">
-    <h2>New Player Application</h2>
+    <h2>{{ $applicationType === 'etp' ? 'New Emerging Talent Programme Application' : 'New Player Application' }}</h2>
 
     <p><strong>Name:</strong> {{ $applicant->name }}</p>
     <p><strong>Email:</strong> {{ $applicant->email }}</p>

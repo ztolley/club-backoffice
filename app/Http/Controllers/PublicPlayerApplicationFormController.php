@@ -18,7 +18,12 @@ class PublicPlayerApplicationFormController extends Controller
      */
     public function show()
     {
-        return view('application/form', []);
+        return $this->showForm('player');
+    }
+
+    public function showEtp()
+    {
+        return $this->showForm('etp');
     }
 
     /**
@@ -27,6 +32,23 @@ class PublicPlayerApplicationFormController extends Controller
      * Accepts a form post to a url with the application in it and then creates the appliant record in the database.
      */
     public function submit(Request $request)
+    {
+        return $this->submitForm($request, 'player');
+    }
+
+    public function submitEtp(Request $request)
+    {
+        return $this->submitForm($request, 'etp');
+    }
+
+    protected function showForm(string $type)
+    {
+        return view('application/form', [
+            'applicationType' => $type,
+        ]);
+    }
+
+    protected function submitForm(Request $request, string $type)
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -49,12 +71,15 @@ class PublicPlayerApplicationFormController extends Controller
             'additional_info' => 'nullable|string',
         ]);
 
+        if ($type === 'etp') {
+            $data['age_groups'] = 'ETP';
+        }
 
         $applicant = Applicant::create($data);
 
         // Send email
-        Mail::send(new ApplicantSubmitted($applicant));
+        Mail::send(new ApplicantSubmitted($applicant, $type));
 
-        return redirect()->route('application.success');
+        return redirect()->route($type === 'etp' ? 'etp.application.success' : 'application.success');
     }
 }
