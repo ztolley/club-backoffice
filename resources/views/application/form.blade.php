@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Player Application</title>
+    <title>{{ $applicationType === 'etp' ? 'Emerging Talent Programme Application' : 'Player Application' }}</title>
     <link rel="icon" type="image/svg+xml" href="/img/logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&amp;display=swap"
@@ -14,9 +14,14 @@
 
 <body>
     <div class="container">
-        <p>Hartland Girls Academy are actively inviting applications for the 26/27 season. Please provide your details
-            below and we will be in contact in the coming weeks with trial dates and locations.</p>
-        <form method="POST" action="{{ route('application.submit') }}" class="forms-form forms-validate">
+        <p>
+            {{ $applicationType === 'etp'
+                ? 'Places within the Emerging Talent Programme are limited to maintain small-group coaching and provide meaningful individual attention. Invitations are extended based on ongoing observation by the Hartland coaching team and reflect a view that a player may benefit from additional development opportunities within our academy environment. Participation in the programme does not guarantee future squad selection or progression but provides players with the opportunity to experience academy standards and further support their technical and personal development. Parents are encouraged to review the programme information before completing registration.'
+                : 'Hartland Girls Academy are actively inviting applications for the 26/27 season. Please provide your details below and we will be in contact in the coming weeks with trial dates and locations.' }}
+        </p>
+        <form method="POST"
+            action="{{ $applicationType === 'etp' ? route('etp.application.submit') : route('application.submit') }}"
+            class="forms-form forms-validate">
             @csrf
 
             <div id="forms-fields-container">
@@ -66,9 +71,12 @@
                 ]" label="Preferred Foot" :required="false"
                     placeholder="Select preferred foot" />
 
-
-                <x-text-field label="Applicable Age Groups (26/27)" name="age_groups" value="{{ old('age_groups') }}"
-                    :required="false" description="U12,13,14,15,16,18 or open age" />
+                @if ($applicationType === 'etp')
+                    <input type="hidden" name="age_groups" value="ETP">
+                @else
+                    <x-text-field label="Applicable Age Groups (26/27)" name="age_groups" value="{{ old('age_groups') }}"
+                        :required="false" description="U12,13,14,15,16,18 or open age" />
+                @endif
 
                 <x-text-area label="How Did You Hear About Us" name="how_hear" value="{{ old('how_hear') }}"
                     :required="false" />
