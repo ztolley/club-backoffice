@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e628b9e802142873bb9c0be6fc5e9e8",
+    "content-hash": "fd370d5994e0c6d2d58b13fdc6ed89a6",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -10063,23 +10063,23 @@
         },
         {
             "name": "jasonmccreary/laravel-test-assertions",
-            "version": "v2.8.0",
+            "version": "v2.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jasonmccreary/laravel-test-assertions.git",
-                "reference": "4e0542af0a49d72247b353092f9e79128e3615db"
+                "reference": "45bb6adbf16737eebcbdc5a31923b33099eed177"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jasonmccreary/laravel-test-assertions/zipball/4e0542af0a49d72247b353092f9e79128e3615db",
-                "reference": "4e0542af0a49d72247b353092f9e79128e3615db",
+                "url": "https://api.github.com/repos/jasonmccreary/laravel-test-assertions/zipball/45bb6adbf16737eebcbdc5a31923b33099eed177",
+                "reference": "45bb6adbf16737eebcbdc5a31923b33099eed177",
                 "shasum": ""
             },
             "require": {
-                "illuminate/testing": "^11.0|^12.0",
+                "illuminate/testing": "^11.0|^12.0|^13.0",
                 "mockery/mockery": "^1.4.4",
                 "php": "^8.1",
-                "phpunit/phpunit": "^10.1|^11.0|^12.0"
+                "phpunit/phpunit": "^11.0|^12.0|^13.0"
             },
             "type": "library",
             "extra": {
@@ -10107,9 +10107,9 @@
             "description": "A set of helpful assertions when testing Laravel applications.",
             "support": {
                 "issues": "https://github.com/jasonmccreary/laravel-test-assertions/issues",
-                "source": "https://github.com/jasonmccreary/laravel-test-assertions/tree/v2.8.0"
+                "source": "https://github.com/jasonmccreary/laravel-test-assertions/tree/v2.9.0"
             },
-            "time": "2025-04-10T20:19:59+00:00"
+            "time": "2026-03-14T17:09:09+00:00"
         },
         {
             "name": "laravel/pail",
@@ -11419,16 +11419,16 @@
         },
         {
             "name": "sebastian/environment",
-            "version": "8.0.3",
+            "version": "8.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "24a711b5c916efc6d6e62aa65aa2ec98fef77f68"
+                "reference": "7b8842c2d8e85d0c3a5831236bf5869af6ab2a11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/24a711b5c916efc6d6e62aa65aa2ec98fef77f68",
-                "reference": "24a711b5c916efc6d6e62aa65aa2ec98fef77f68",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/7b8842c2d8e85d0c3a5831236bf5869af6ab2a11",
+                "reference": "7b8842c2d8e85d0c3a5831236bf5869af6ab2a11",
                 "shasum": ""
             },
             "require": {
@@ -11471,7 +11471,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/environment/issues",
                 "security": "https://github.com/sebastianbergmann/environment/security/policy",
-                "source": "https://github.com/sebastianbergmann/environment/tree/8.0.3"
+                "source": "https://github.com/sebastianbergmann/environment/tree/8.0.4"
             },
             "funding": [
                 {
@@ -11491,7 +11491,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-12T14:11:56+00:00"
+            "time": "2026-03-15T07:05:40+00:00"
         },
         {
             "name": "sebastian/exporter",
