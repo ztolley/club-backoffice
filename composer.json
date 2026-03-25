@@ -18,7 +18,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "1.24.1",
-        "jasonmccreary/laravel-test-assertions": "2.8.0",
+        "jasonmccreary/laravel-test-assertions": "2.9.0",
         "laravel/pail": "1.2.6",
         "laravel/pint": "1.29.0",
         "laravel/sail": "1.55.0",
