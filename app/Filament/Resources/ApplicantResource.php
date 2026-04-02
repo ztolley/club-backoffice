@@ -14,7 +14,10 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Actions;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class ApplicantResource extends Resource
 {
@@ -128,6 +131,44 @@ class ApplicantResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                SelectFilter::make('application_year')
+                    ->label('Application Year')
+                    ->default((string) now()->year)
+                    ->placeholder('All years')
+                    ->options(function (): array {
+                        $driver = Applicant::query()->getConnection()->getDriverName();
+                        $currentYear = (string) now()->year;
+                        $yearExpression = match ($driver) {
+                            'sqlite' => "strftime('%Y', application_date)",
+                            'pgsql' => 'EXTRACT(YEAR FROM application_date)::text',
+                            default => 'YEAR(application_date)',
+                        };
+
+                        $years = Applicant::query()
+                            ->whereNotNull('application_date')
+                            ->selectRaw("{$yearExpression} as year")
+                            ->distinct()
+                            ->pluck('year', 'year')
+                            ->filter()
+                            ->mapWithKeys(fn (mixed $year): array => [(string) $year => (string) $year])
+                            ->all();
+
+                        $years[$currentYear] ??= $currentYear;
+                        krsort($years);
+
+                        return $years;
+                    })
+                    ->query(function (Builder $query, array $data): void {
+                        $year = $data['value'] ?? null;
+
+                        if (blank($year)) {
+                            return;
+                        }
+
+                        $query->whereYear('application_date', (int) $year);
+                    }),
             ])
             ->recordUrl(fn($record) => route('filament.admin.resources.applicants.edit', $record))
             ->bulkActions([
