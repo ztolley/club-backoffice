@@ -124,7 +124,7 @@ jobs:
           touch database/e2e.sqlite
           php artisan migrate --force
           php artisan db:seed --class=ShieldSeeder --force
-          php artisan tinker --execute="\App\Models\Team::factory()->create(); \App\Models\Player::factory()->create(); \App\Models\Applicant::factory()->create(); \App\Models\User::factory()->create();"
+          php artisan tinker --execute="\App\Models\Team::factory()->create(['name' => 'E2E Team']);"
         env:
           APP_ENV: testing
           DB_CONNECTION: sqlite

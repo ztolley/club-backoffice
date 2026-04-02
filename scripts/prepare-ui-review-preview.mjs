@@ -1,5 +1,9 @@
 import { cp, mkdir, readdir, writeFile } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import path from 'node:path';
+
+const execFileAsync = promisify(execFile);
 
 function parseArgs(argv) {
     const args = {};
@@ -54,6 +58,21 @@ function markdownImage(label, url) {
     return `![${label}](${url})`;
 }
 
+async function tryCreateGif(source, destination) {
+    try {
+        await execFileAsync('ffmpeg', [
+            '-y',
+            '-i', source,
+            '-vf', 'fps=5,scale=960:-1:flags=lanczos',
+            destination,
+        ]);
+
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 async function main() {
     const {
         input,
@@ -69,11 +88,8 @@ async function main() {
 
     const files = await collectFiles(input);
     const screenshotNames = [
-        'desktop-dashboard.png',
-        'desktop-applicants-list.png',
-        'desktop-applicant-edit.png',
-        'mobile-dashboard.png',
-        'mobile-applicants-list.png',
+        'applicant-admin-review.png',
+        'player-signup-success.png',
     ];
 
     await mkdir(output, { recursive: true });
@@ -93,20 +109,38 @@ async function main() {
         published[name] = `${baseUrl}/${name}`;
     }
 
-    const videoCandidates = {
-        'desktop-flow.webm': files.filter((file) => path.basename(file) === 'video.webm' && file.includes('chromium') && !file.includes('mobile-chromium')),
-        'mobile-flow.webm': files.filter((file) => path.basename(file) === 'video.webm' && file.includes('mobile-chromium')),
-    };
+    const previewAssets = [
+        {
+            gif: 'applicant-journey.gif',
+            screenshot: 'applicant-admin-review.png',
+            video: 'applicant-journey.webm',
+        },
+        {
+            gif: 'player-journey.gif',
+            screenshot: 'player-signup-success.png',
+            video: 'player-journey.webm',
+        },
+    ];
 
-    for (const [name, matches] of Object.entries(videoCandidates)) {
-        if (!matches.length) {
+    for (const asset of previewAssets) {
+        const screenshotUrl = published[asset.screenshot];
+
+        if (!screenshotUrl) {
             continue;
         }
 
-        const source = pickPreferred(matches);
-        const destination = path.join(output, name);
-        await cp(source, destination);
-        published[name] = `${baseUrl}/${name}`;
+        const screenshotMatch = pickPreferred(files.filter((file) => path.basename(file) === asset.screenshot));
+        const videoSource = path.join(path.dirname(screenshotMatch), 'video.webm');
+        const videoDestination = path.join(output, asset.video);
+
+        await cp(videoSource, videoDestination);
+        published[asset.video] = `${baseUrl}/${asset.video}`;
+
+        const gifDestination = path.join(output, asset.gif);
+
+        if (await tryCreateGif(videoSource, gifDestination)) {
+            published[asset.gif] = `${baseUrl}/${asset.gif}`;
+        }
     }
 
     await writeFile(path.join(output, '.nojekyll'), '');
@@ -121,41 +155,40 @@ async function main() {
         '',
     ];
 
-    if (published['desktop-dashboard.png'] || published['desktop-applicants-list.png'] || published['desktop-applicant-edit.png']) {
-        lines.push('### Desktop');
+    const sections = [
+        {
+            gif: 'applicant-journey.gif',
+            screenshot: 'applicant-admin-review.png',
+            title: 'Applicant journey',
+            video: 'applicant-journey.webm',
+        },
+        {
+            gif: 'player-journey.gif',
+            screenshot: 'player-signup-success.png',
+            title: 'Player journeys',
+            video: 'player-journey.webm',
+        },
+    ];
 
-        if (published['desktop-dashboard.png']) {
-            lines.push(markdownImage('Desktop dashboard', published['desktop-dashboard.png']));
+    for (const section of sections) {
+        if (!published[section.gif] && !published[section.screenshot] && !published[section.video]) {
+            continue;
         }
 
-        if (published['desktop-applicants-list.png']) {
-            lines.push(markdownImage('Desktop applicants list', published['desktop-applicants-list.png']));
+        lines.push(`### ${section.title}`);
+
+        if (published[section.gif]) {
+            lines.push(markdownImage(`${section.title} preview`, published[section.gif]));
+        } else if (published[section.screenshot]) {
+            lines.push(markdownImage(`${section.title} still`, published[section.screenshot]));
         }
 
-        if (published['desktop-applicant-edit.png']) {
-            lines.push(markdownImage('Desktop applicant edit', published['desktop-applicant-edit.png']));
+        if (published[section.video]) {
+            lines.push('', `[Full video](${published[section.video]})`);
         }
 
-        if (published['desktop-flow.webm']) {
-            lines.push('', `[Desktop flow video](${published['desktop-flow.webm']})`);
-        }
-
-        lines.push('');
-    }
-
-    if (published['mobile-dashboard.png'] || published['mobile-applicants-list.png']) {
-        lines.push('### Mobile');
-
-        if (published['mobile-dashboard.png']) {
-            lines.push(markdownImage('Mobile dashboard', published['mobile-dashboard.png']));
-        }
-
-        if (published['mobile-applicants-list.png']) {
-            lines.push(markdownImage('Mobile applicants list', published['mobile-applicants-list.png']));
-        }
-
-        if (published['mobile-flow.webm']) {
-            lines.push('', `[Mobile flow video](${published['mobile-flow.webm']})`);
+        if (published[section.screenshot]) {
+            lines.push(`[Still image](${published[section.screenshot]})`);
         }
 
         lines.push('');
