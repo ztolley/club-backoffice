@@ -1,9 +1,11 @@
 import { cp, mkdir, readdir, writeFile } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import os from 'node:os';
 import path from 'node:path';
 
 const execFileAsync = promisify(execFile);
+let ffmpegBinaryPromise;
 
 function parseArgs(argv) {
     const args = {};
@@ -58,9 +60,71 @@ function markdownImage(label, url) {
     return `![${label}](${url})`;
 }
 
-async function tryCreateGif(source, destination) {
+async function canRun(binary) {
+    if (!binary) {
+        return false;
+    }
+
     try {
-        await execFileAsync('ffmpeg', [
+        await execFileAsync(binary, ['-version']);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+async function resolveFfmpegBinary() {
+    if (!ffmpegBinaryPromise) {
+        ffmpegBinaryPromise = (async () => {
+            const candidates = [];
+
+            if (process.env.PLAYWRIGHT_FFMPEG) {
+                candidates.push(process.env.PLAYWRIGHT_FFMPEG);
+            }
+
+            const playwrightCacheDirectory = path.join(os.homedir(), '.cache', 'ms-playwright');
+
+            try {
+                const entries = await readdir(playwrightCacheDirectory, { withFileTypes: true });
+                const ffmpegDirectories = entries
+                    .filter((entry) => entry.isDirectory() && entry.name.startsWith('ffmpeg-'))
+                    .sort((left, right) => right.name.localeCompare(left.name));
+
+                for (const directory of ffmpegDirectories) {
+                    candidates.push(
+                        path.join(playwrightCacheDirectory, directory.name, 'ffmpeg-linux'),
+                        path.join(playwrightCacheDirectory, directory.name, 'ffmpeg-mac'),
+                        path.join(playwrightCacheDirectory, directory.name, 'ffmpeg-win64.exe'),
+                    );
+                }
+            } catch {
+                // Ignore cache lookup failures and fall back to PATH.
+            }
+
+            candidates.push('ffmpeg');
+
+            for (const candidate of candidates) {
+                if (await canRun(candidate)) {
+                    return candidate;
+                }
+            }
+
+            return null;
+        })();
+    }
+
+    return ffmpegBinaryPromise;
+}
+
+async function tryCreateGif(source, destination) {
+    const ffmpegBinary = await resolveFfmpegBinary();
+
+    if (!ffmpegBinary) {
+        return false;
+    }
+
+    try {
+        await execFileAsync(ffmpegBinary, [
             '-y',
             '-i', source,
             '-vf', 'fps=5,scale=960:-1:flags=lanczos',
