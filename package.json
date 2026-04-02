@@ -4,7 +4,8 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "test:e2e": "env -u NO_COLOR playwright test"
+        "test:e2e": "env -u NO_COLOR playwright test --grep-invert @ui-review",
+        "test:e2e:ui-review": "env -u NO_COLOR playwright test --grep @ui-review --output test-results/ui-review"
     },
     "devDependencies": {
         "@playwright/test": "^1.59.0",

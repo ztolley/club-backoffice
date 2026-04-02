@@ -161,6 +161,32 @@ jobs:
           E2E_ADMIN_EMAIL: admin@example.com
           E2E_ADMIN_PASSWORD: password123
 
+      - name: Capture UI review artifacts
+        if: github.event_name == 'pull_request'
+        run: npm run test:e2e:ui-review
+        env:
+          CI: true
+          E2E_BASE_URL: http://localhost:8000
+          E2E_ADMIN_EMAIL: admin@example.com
+          E2E_ADMIN_PASSWORD: password123
+
+      - name: Summarize UI review artifacts
+        if: always() && github.event_name == 'pull_request'
+        run: |
+          {
+            echo "### UI review artifacts"
+            echo "Download the \`ui-review-artifacts\` artifact from this run before approving UI-affecting changes."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload UI review artifacts
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ui-review-artifacts
+          path: |
+            test-results/ui-review
+          if-no-files-found: warn
+
       - name: Upload Playwright artifacts (on failure)
         if: failure()
         uses: actions/upload-artifact@v7
