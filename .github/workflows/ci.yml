@@ -200,7 +200,7 @@ jobs:
 
           mkdir -p /tmp/ui-review-previews/pr-${{ github.event.pull_request.number }}
           rm -rf /tmp/ui-review-previews/pr-${{ github.event.pull_request.number }}/*
-          cp -R ui-review-preview/. /tmp/ui-review-previews/pr-${{ github.event.pull_request.number }}/
+          cp -R "$GITHUB_WORKSPACE/ui-review-preview/." /tmp/ui-review-previews/pr-${{ github.event.pull_request.number }}/
 
           cd /tmp/ui-review-previews
           git config user.name "github-actions[bot]"
