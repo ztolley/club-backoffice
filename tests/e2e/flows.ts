@@ -171,10 +171,10 @@ export async function submitPublicPlayerSignup(
     await page.getByLabel('Injuries').fill('No injuries');
     await page.getByLabel('Additional Comments').fill('Parent signup E2E journey.');
 
-    await page.getByLabel(/^Name$/).first().fill(player.parentName);
-    await page.getByLabel(/^Email$/).first().fill(player.parentEmail);
-    await page.getByLabel(/^Phone$/).first().fill(player.parentPhone);
-    await page.getByLabel(/^Address$/).first().fill(player.parentAddress);
+    await page.locator('[name="contacts[0][name]"]').fill(player.parentName);
+    await page.locator('[name="contacts[0][email]"]').fill(player.parentEmail);
+    await page.locator('[name="contacts[0][phone]"]').fill(player.parentPhone);
+    await page.locator('[name="contacts[0][address]"]').fill(player.parentAddress);
 
     await page.getByLabel(/player code of conduct/i).check();
     await page.getByLabel(/parent code of conduct/i).check();
