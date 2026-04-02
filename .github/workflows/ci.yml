@@ -87,6 +87,9 @@ jobs:
 
   e2e-browser:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout
@@ -114,6 +117,9 @@ jobs:
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
       - name: Prepare app for E2E
         run: |
           cp .env.example .env
@@ -121,7 +127,7 @@ jobs:
           touch database/e2e.sqlite
           php artisan migrate --force
           php artisan db:seed --class=ShieldSeeder --force
-          php artisan tinker --execute="\App\Models\Team::factory()->create(); \App\Models\Player::factory()->create(); \App\Models\Applicant::factory()->create(); \App\Models\User::factory()->create();"
+          php artisan tinker --execute="\App\Models\Team::factory()->create(['name' => 'E2E Team']);"
         env:
           APP_ENV: testing
           DB_CONNECTION: sqlite
@@ -160,6 +166,108 @@ jobs:
           E2E_BASE_URL: http://localhost:8000
           E2E_ADMIN_EMAIL: admin@example.com
           E2E_ADMIN_PASSWORD: password123
+
+      - name: Capture UI review artifacts
+        if: github.event_name == 'pull_request'
+        run: npm run test:e2e:ui-review
+        env:
+          CI: true
+          E2E_BASE_URL: http://localhost:8000
+          E2E_ADMIN_EMAIL: admin@example.com
+          E2E_ADMIN_PASSWORD: password123
+
+      - name: Prepare UI review preview content
+        if: always() && github.event_name == 'pull_request'
+        run: |
+          node scripts/prepare-ui-review-preview.mjs \
+            --input test-results/ui-review \
+            --output ui-review-preview \
+            --base-url "https://raw.githubusercontent.com/${{ github.repository }}/ui-review-previews/pr-${{ github.event.pull_request.number }}" \
+            --comment-file ui-review-preview-comment.md \
+            --run-url "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+      - name: Publish UI review preview files
+        if: always() && github.event_name == 'pull_request'
+        run: |
+          git fetch origin ui-review-previews || true
+          rm -rf /tmp/ui-review-previews
+
+          if git show-ref --verify --quiet refs/remotes/origin/ui-review-previews; then
+            git worktree add /tmp/ui-review-previews origin/ui-review-previews
+          else
+            git worktree add --detach /tmp/ui-review-previews
+            cd /tmp/ui-review-previews
+            git checkout --orphan ui-review-previews
+            find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          fi
+
+          mkdir -p /tmp/ui-review-previews/pr-${{ github.event.pull_request.number }}
+          rm -rf /tmp/ui-review-previews/pr-${{ github.event.pull_request.number }}/*
+          cp -R "$GITHUB_WORKSPACE/ui-review-preview/." /tmp/ui-review-previews/pr-${{ github.event.pull_request.number }}/
+
+          cd /tmp/ui-review-previews
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pr-${{ github.event.pull_request.number }}
+
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+
+          git commit -m "Update UI review preview for PR #${{ github.event.pull_request.number }}"
+          git push origin HEAD:ui-review-previews
+
+      - name: Comment UI review preview on PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('ui-review-preview-comment.md', 'utf8');
+            const marker = '<!-- ui-review-preview -->';
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+            const existing = comments.find((comment) => comment.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body,
+              });
+            }
+
+      - name: Summarize UI review artifacts
+        if: always() && github.event_name == 'pull_request'
+        run: |
+          {
+            echo "### UI review artifacts"
+            echo "Download the \`ui-review-artifacts\` artifact from this run before approving UI-affecting changes."
+            echo "The PR should also have an updated comment with inline motion previews and still images."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload UI review artifacts
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ui-review-artifacts
+          path: |
+            test-results/ui-review
+          if-no-files-found: warn
 
       - name: Upload Playwright artifacts (on failure)
         if: failure()
