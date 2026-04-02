@@ -30,12 +30,20 @@ test('applicant journey review @ui-review', async ({ page }, testInfo) => {
     await reviewApplicantInAdmin(page, applicant, async (name) => capture(page, name));
 });
 
-test('player journeys review @ui-review', async ({ page }, testInfo) => {
+test('admin player journey review @ui-review', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'chromium', 'Desktop-only UI review coverage.');
 
     const player = buildPlayerJourney(testInfo);
 
     await createPlayerInAdmin(page, player);
-    await submitPublicPlayerSignup(page, player, async (name) => capture(page, name));
-    await verifyPublicSignupPlayerInAdmin(page, player);
+    await capture(page, 'admin-player-review.png');
+});
+
+test('public player signup journey review @ui-review', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium', 'Desktop-only UI review coverage.');
+
+    const player = buildPlayerJourney(testInfo);
+
+    await submitPublicPlayerSignup(page, player);
+    await verifyPublicSignupPlayerInAdmin(page, player, async (name) => capture(page, name));
 });

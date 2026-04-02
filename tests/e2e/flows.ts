@@ -153,6 +153,11 @@ export async function createPlayerInAdmin(page: Page, player: PlayerJourney): Pr
 
     await expect(page).toHaveURL(/\/players\/.+\/edit$/);
     await expect(page.getByLabel('Name')).toHaveValue(player.adminPlayerName);
+    await page.getByLabel('Notes').fill('Created in admin during E2E flow.');
+    await page.getByRole('button', { name: /save changes/i }).click();
+    await expect(page.getByText(/saved/i)).toBeVisible({ timeout: 10000 });
+    await page.reload();
+    await expect(page.getByLabel('Notes')).toHaveValue('Created in admin during E2E flow.');
 
     await page.goto('/players');
     await expect(page.locator('table')).toContainText(player.adminPlayerName);
@@ -161,7 +166,6 @@ export async function createPlayerInAdmin(page: Page, player: PlayerJourney): Pr
 export async function submitPublicPlayerSignup(
     page: Page,
     player: PlayerJourney,
-    capture?: ScreenshotCapture,
 ): Promise<void> {
     await page.goto('/player-signup');
 
@@ -188,25 +192,38 @@ export async function submitPublicPlayerSignup(
 
     await expect(page).toHaveURL(/\/player-signup\/complete$/);
     await expect(page.getByRole('heading', { name: /thank you/i })).toBeVisible();
-
-    if (capture) {
-        await capture('player-signup-success.png');
-    }
 }
 
-export async function verifyPublicSignupPlayerInAdmin(page: Page, player: PlayerJourney): Promise<void> {
+export async function verifyPublicSignupPlayerInAdmin(
+    page: Page,
+    player: PlayerJourney,
+    capture?: ScreenshotCapture,
+): Promise<void> {
     await loginAsAdmin(page);
     await page.goto('/players');
 
-    await expect(page.locator('table')).toContainText(player.publicPlayerName);
-    await expect(page.locator('table')).toContainText(player.parentEmail);
-
     const row = page.locator('table tbody tr').filter({ hasText: player.publicPlayerName }).first();
+    await expect(row).toContainText(player.publicPlayerName);
+    await expect(row).toContainText(player.parentEmail);
     await row.click();
 
     await expect(page).toHaveURL(/\/players\/.+\/edit$/);
     await expect(page.getByLabel('Name')).toHaveValue(player.publicPlayerName);
     await expect(page.getByLabel('FAN')).toHaveValue(player.fan);
-    await expect(page.getByText(player.parentName)).toBeVisible();
-    await expect(page.getByText(player.parentEmail)).toBeVisible();
+    await expect(page.getByLabel('Preferred position')).toHaveValue('RW');
+    await expect(page.getByLabel('Other positions')).toHaveValue('LW');
+    await expect(page.getByLabel('Medical conditions')).toHaveValue('None');
+    await expect(page.getByLabel('Injuries')).toHaveValue('No injuries');
+    await expect(page.getByLabel('Additional info')).toHaveValue('Parent signup E2E journey.');
+
+    await page.getByLabel('Notes').fill('Reviewed public signup in admin during E2E flow.');
+
+    if (capture) {
+        await capture('player-signup-admin-review.png');
+    }
+
+    await page.getByRole('button', { name: /save changes/i }).click();
+    await expect(page.getByText(/saved/i)).toBeVisible({ timeout: 10000 });
+    await page.reload();
+    await expect(page.getByLabel('Notes')).toHaveValue('Reviewed public signup in admin during E2E flow.');
 }

@@ -89,7 +89,8 @@ async function main() {
     const files = await collectFiles(input);
     const screenshotNames = [
         'applicant-admin-review.png',
-        'player-signup-success.png',
+        'admin-player-review.png',
+        'player-signup-admin-review.png',
     ];
 
     await mkdir(output, { recursive: true });
@@ -116,9 +117,14 @@ async function main() {
             video: 'applicant-journey.webm',
         },
         {
-            gif: 'player-journey.gif',
-            screenshot: 'player-signup-success.png',
-            video: 'player-journey.webm',
+            gif: 'admin-player-journey.gif',
+            screenshot: 'admin-player-review.png',
+            video: 'admin-player-journey.webm',
+        },
+        {
+            gif: 'player-signup-journey.gif',
+            screenshot: 'player-signup-admin-review.png',
+            video: 'player-signup-journey.webm',
         },
     ];
 
@@ -163,10 +169,16 @@ async function main() {
             video: 'applicant-journey.webm',
         },
         {
-            gif: 'player-journey.gif',
-            screenshot: 'player-signup-success.png',
-            title: 'Player journeys',
-            video: 'player-journey.webm',
+            gif: 'admin-player-journey.gif',
+            screenshot: 'admin-player-review.png',
+            title: 'Admin player journey',
+            video: 'admin-player-journey.webm',
+        },
+        {
+            gif: 'player-signup-journey.gif',
+            screenshot: 'player-signup-admin-review.png',
+            title: 'Public player signup journey',
+            video: 'player-signup-journey.webm',
         },
     ];
 

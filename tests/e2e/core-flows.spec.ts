@@ -10,7 +10,7 @@ import {
 } from './flows';
 
 test.describe('core journeys', () => {
-    test('public applicant submission can be reviewed and edited by admin', async ({ page }, testInfo) => {
+    test('a public applicant can submit a form and be reviewed in admin', async ({ page }, testInfo) => {
         test.skip(testInfo.project.name !== 'chromium', 'Core admin journey is desktop-only.');
 
         const applicant = buildApplicantJourney(testInfo);
@@ -19,12 +19,19 @@ test.describe('core journeys', () => {
         await reviewApplicantInAdmin(page, applicant);
     });
 
-    test('admin player creation and public parent signup both work end to end', async ({ page }, testInfo) => {
+    test('an admin can create and update a player record', async ({ page }, testInfo) => {
         test.skip(testInfo.project.name !== 'chromium', 'Core admin journey is desktop-only.');
 
         const player = buildPlayerJourney(testInfo);
 
         await createPlayerInAdmin(page, player);
+    });
+
+    test('a parent can sign up a player and the admin can review the record', async ({ page }, testInfo) => {
+        test.skip(testInfo.project.name !== 'chromium', 'Core admin journey is desktop-only.');
+
+        const player = buildPlayerJourney(testInfo);
+
         await submitPublicPlayerSignup(page, player);
         await verifyPublicSignupPlayerInAdmin(page, player);
     });

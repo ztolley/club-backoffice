@@ -254,7 +254,7 @@ jobs:
           {
             echo "### UI review artifacts"
             echo "Download the \`ui-review-artifacts\` artifact from this run before approving UI-affecting changes."
-            echo "The PR should also have an updated comment with inline screenshot previews."
+            echo "The PR should also have an updated comment with inline motion previews and still images."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload UI review artifacts
