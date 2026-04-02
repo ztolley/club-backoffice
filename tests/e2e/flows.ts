@@ -66,9 +66,13 @@ export function buildPlayerJourney(testInfo: TestInfo): PlayerJourney {
 export async function loginAsAdmin(page: Page): Promise<void> {
     await page.goto('/login');
 
-    await page.locator('[id="form.email"]').fill(adminEmail);
-    await page.locator('[id="form.password"]').fill(adminPassword);
-    await page.getByRole('button', { name: /sign in/i }).click();
+    const emailField = page.locator('[id="form.email"]');
+
+    if (await emailField.isVisible({ timeout: 2000 }).catch(() => false)) {
+        await emailField.fill(adminEmail);
+        await page.locator('[id="form.password"]').fill(adminPassword);
+        await page.getByRole('button', { name: /sign in/i }).click();
+    }
 
     await expect(page).toHaveURL(/\/$/, { timeout: 15000 });
     await expect(page.getByRole('heading', { name: '403' })).toHaveCount(0);
