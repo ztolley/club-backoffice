@@ -85,18 +85,12 @@ async function resolveFfmpegBinary() {
             const playwrightCacheDirectory = path.join(os.homedir(), '.cache', 'ms-playwright');
 
             try {
-                const entries = await readdir(playwrightCacheDirectory, { withFileTypes: true });
-                const ffmpegDirectories = entries
-                    .filter((entry) => entry.isDirectory() && entry.name.startsWith('ffmpeg-'))
-                    .sort((left, right) => right.name.localeCompare(left.name));
+                const cacheFiles = await collectFiles(playwrightCacheDirectory);
+                const ffmpegFiles = cacheFiles
+                    .filter((file) => path.basename(file).startsWith('ffmpeg'))
+                    .sort((left, right) => right.localeCompare(left));
 
-                for (const directory of ffmpegDirectories) {
-                    candidates.push(
-                        path.join(playwrightCacheDirectory, directory.name, 'ffmpeg-linux'),
-                        path.join(playwrightCacheDirectory, directory.name, 'ffmpeg-mac'),
-                        path.join(playwrightCacheDirectory, directory.name, 'ffmpeg-win64.exe'),
-                    );
-                }
+                candidates.push(...ffmpegFiles);
             } catch {
                 // Ignore cache lookup failures and fall back to PATH.
             }
