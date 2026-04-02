@@ -1,0 +1,224 @@
+name: Deploy (IONOS)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: deploy-ionos-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Summarize deployed changes
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          echo "### Deployment revision" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Event: \`$EVENT_NAME\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: \`$AFTER_SHA\`" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$EVENT_NAME" = "push" ] && [ -n "$BEFORE_SHA" ] && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            echo "- Compare: \`$BEFORE_SHA..$AFTER_SHA\`" >> "$GITHUB_STEP_SUMMARY"
+            git diff --name-status "$BEFORE_SHA" "$AFTER_SHA" > /tmp/deployed-files.txt
+          else
+            echo "- Compare: single commit (\`$AFTER_SHA\`)" >> "$GITHUB_STEP_SUMMARY"
+            git show --name-status --pretty="" "$AFTER_SHA" > /tmp/deployed-files.txt
+          fi
+
+          if [ -s /tmp/deployed-files.txt ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "### Changed files" >> "$GITHUB_STEP_SUMMARY"
+            echo '```text' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/deployed-files.txt >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/deployed-files.txt
+          else
+            echo "No changed files were detected for this deployment."
+            echo "- Changed files: none detected" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Validate required secrets
+        env:
+          DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          DEPLOY_SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          DEPLOY_SSH_PASSWORD: ${{ secrets.DEPLOY_SSH_PASSWORD }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          for name in DEPLOY_SSH_HOST DEPLOY_SSH_USER DEPLOY_PATH; do
+            if [ -z "${!name}" ]; then
+              echo "Missing required secret: $name"
+              exit 1
+            fi
+          done
+          if [ -z "${DEPLOY_SSH_PRIVATE_KEY}" ] && [ -z "${DEPLOY_SSH_PASSWORD}" ]; then
+            echo "Missing auth secret: set DEPLOY_SSH_PRIVATE_KEY or DEPLOY_SSH_PASSWORD"
+            exit 1
+          fi
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, bcmath, pdo_mysql
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install production PHP dependencies
+        run: composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Build deploy artifact
+        run: |
+          rm -rf /tmp/deploy-artifact
+          mkdir -p /tmp/deploy-artifact
+          rsync -a . /tmp/deploy-artifact \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude ".idea" \
+            --exclude ".vscode" \
+            --exclude "node_modules" \
+            --exclude "tests" \
+            --exclude "docker" \
+            --exclude "playwright-report" \
+            --exclude "test-results" \
+            --exclude ".env" \
+            --exclude ".env.*" \
+            --exclude "storage/logs/*" \
+            --exclude "storage/framework/testing/*"
+
+      - name: Setup SSH
+        env:
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
+        run: |
+          mkdir -p ~/.ssh
+          if [ -n "${DEPLOY_SSH_PRIVATE_KEY}" ]; then
+            printf "%s" "$DEPLOY_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+          fi
+          ssh-keyscan -p "${DEPLOY_SSH_PORT:-22}" -H "$DEPLOY_SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Install sshpass (for password auth)
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      - name: Sync files to server
+        env:
+          DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
+          DEPLOY_SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          DEPLOY_SSH_PASSWORD: ${{ secrets.DEPLOY_SSH_PASSWORD }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          if [ -n "${DEPLOY_SSH_PRIVATE_KEY}" ]; then
+            rsync -az \
+              -e "ssh -p ${DEPLOY_SSH_PORT:-22}" \
+              /tmp/deploy-artifact/ \
+              "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}:${DEPLOY_PATH}/"
+          else
+            sshpass -p "${DEPLOY_SSH_PASSWORD}" rsync -az \
+              -e "ssh -p ${DEPLOY_SSH_PORT:-22}" \
+              /tmp/deploy-artifact/ \
+              "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}:${DEPLOY_PATH}/"
+          fi
+
+      - name: Run post-deploy Laravel commands
+        env:
+          DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          DEPLOY_SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
+          DEPLOY_SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          DEPLOY_SSH_PASSWORD: ${{ secrets.DEPLOY_SSH_PASSWORD }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          DEPLOY_PHP_BIN: ${{ secrets.DEPLOY_PHP_BIN }}
+          DEPLOY_RUN_MIGRATIONS: ${{ secrets.DEPLOY_RUN_MIGRATIONS }}
+        run: |
+          DEPLOY_PATH_ESCAPED=$(printf '%q' "${DEPLOY_PATH}")
+          DEPLOY_PHP_BIN_ESCAPED=$(printf '%q' "${DEPLOY_PHP_BIN}")
+          DEPLOY_RUN_MIGRATIONS_ESCAPED=$(printf '%q' "${DEPLOY_RUN_MIGRATIONS}")
+
+          if [ -n "${DEPLOY_SSH_PRIVATE_KEY}" ]; then
+            SSH_CMD="ssh -T -p ${DEPLOY_SSH_PORT:-22} ${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST} DEPLOY_PATH=${DEPLOY_PATH_ESCAPED} DEPLOY_PHP_BIN=${DEPLOY_PHP_BIN_ESCAPED} DEPLOY_RUN_MIGRATIONS=${DEPLOY_RUN_MIGRATIONS_ESCAPED} bash -se"
+          else
+            SSH_CMD="sshpass -p ${DEPLOY_SSH_PASSWORD} ssh -T -p ${DEPLOY_SSH_PORT:-22} ${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST} DEPLOY_PATH=${DEPLOY_PATH_ESCAPED} DEPLOY_PHP_BIN=${DEPLOY_PHP_BIN_ESCAPED} DEPLOY_RUN_MIGRATIONS=${DEPLOY_RUN_MIGRATIONS_ESCAPED} bash -se"
+          fi
+          timeout 300 ${SSH_CMD} <<'EOF'
+          set -eu
+          DEPLOY_TARGET="${DEPLOY_PATH}"
+          case "$DEPLOY_TARGET" in
+            "~"|"~/"*) DEPLOY_TARGET="$HOME${DEPLOY_TARGET#\~}" ;;
+          esac
+          cd "$DEPLOY_TARGET"
+          export PATH="$HOME/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+
+          PREFERRED_PHP_BIN="$(printf '%s' "${DEPLOY_PHP_BIN:-}" | tr -d '\r' | sed -e 's/^ *//' -e 's/ *$//' -e 's/^\"//' -e 's/\"$//')"
+          PHP_BIN=""
+          for candidate in "$PREFERRED_PHP_BIN" /usr/bin/php8.4-cli /bin/php8.4-cli php8.4-cli php php8.4 php84 php-cli; do
+            [ -n "$candidate" ] || continue
+            if [ -x "$candidate" ]; then
+              :
+            elif ! command -v "$candidate" >/dev/null 2>&1; then
+              continue
+            fi
+            if [ "$("$candidate" -r 'echo PHP_SAPI;' 2>/dev/null || true)" = "cli" ]; then
+              PHP_BIN="$candidate"
+              break
+            fi
+          done
+
+          if [ -z "$PHP_BIN" ]; then
+            echo "No usable PHP CLI binary found on server."
+            for probe in "$PREFERRED_PHP_BIN" /usr/bin/php8.4-cli /bin/php8.4-cli php8.4-cli php php8.4 php84 php-cli; do
+              [ -n "$probe" ] || continue
+              echo "probe: $probe"
+              command -v "$probe" || true
+              "$probe" -v 2>/dev/null | head -n 1 || true
+            done
+            exit 1
+          fi
+
+          "$PHP_BIN" artisan config:clear
+          "$PHP_BIN" artisan route:clear
+          "$PHP_BIN" artisan view:clear
+          "$PHP_BIN" artisan event:clear
+          if [ ! -L public/storage ]; then
+            "$PHP_BIN" artisan storage:link || true
+          fi
+          if [ "${DEPLOY_RUN_MIGRATIONS:-false}" = "true" ]; then
+            "$PHP_BIN" artisan migrate --force
+          fi
+          "$PHP_BIN" artisan config:cache
+          "$PHP_BIN" artisan route:cache
+          "$PHP_BIN" artisan view:cache
+
+          # Lock filesystem permissions after deploy.
+          find . -type d -exec chmod 755 {} +
+          find . -type f -exec chmod 644 {} +
+          chmod -R 775 storage bootstrap/cache
+          chmod 444 public/index.php
+          EOF

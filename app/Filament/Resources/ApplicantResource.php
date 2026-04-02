@@ -1,0 +1,243 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use BackedEnum;
+use App\Filament\Resources\ApplicantResource\Pages;
+use App\Models\Applicant;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Schema;
+use Filament\Notifications\Notification;
+use Filament\Resources\Resource;
+use Filament\Actions;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
+
+class ApplicantResource extends Resource
+{
+    protected static ?string $model = Applicant::class;
+
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema
+            ->schema([
+                TextInput::make('name')->required(),
+                Textarea::make('address')
+                    ->rows(5)
+                    ->required(),
+                TextInput::make('email')
+                    ->label('Email Address')
+                    ->email()
+                    ->required(),
+                TextInput::make('phone')
+                    ->label('Phone Number')
+                    ->tel(),
+                DatePicker::make('dob')
+                    ->label('Date of Birth')
+                    ->maxDate(now())
+                    ->required(),
+                TextInput::make('school'),
+                TextInput::make('saturday_club'),
+                TextInput::make('sunday_club'),
+                Textarea::make('previous_clubs')->columnSpanFull(),
+                Textarea::make('playing_experience')->columnSpanFull(),
+                TextInput::make('preferred_position'),
+                TextInput::make('other_positions'),
+                Select::make('preferred_foot')
+                    ->options([
+                        'Right' => 'Right',
+                        'Left' => 'Left',
+                        'Both' => 'Both',
+                    ]),
+                TextInput::make('age_groups'),
+                Textarea::make('how_hear')
+                    ->label('How did you hear about us?')
+                    ->columnSpanFull(),
+                Textarea::make('medical_conditions')
+                    ->rows(5)
+                    ->columnSpanFull(),
+                Textarea::make('injuries')
+                    ->rows(5)
+                    ->columnSpanFull(),
+                Textarea::make('additional_info')
+                    ->rows(5)
+                    ->columnSpanFull(),
+                DatePicker::make('application_date')
+                    ->label('Application Date')
+                    ->default(now()),
+                Textarea::make('notes')
+                    ->rows(10)
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('email')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('phone')
+                    ->label('Phone')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('dob')
+                    ->label('DOB')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('preferred_position')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('preferred_foot')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('age_groups')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('application_date')
+                    ->label('Application Date')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('estimated_age_group')
+                    ->label('Est Group')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('saturday_club')
+                    ->label('Saturday Club')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('sunday_club')
+                    ->label('Sunday Club')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                SelectFilter::make('application_year')
+                    ->label('Application Year')
+                    ->default((string) now()->year)
+                    ->placeholder('All years')
+                    ->options(function (): array {
+                        $driver = Applicant::query()->getConnection()->getDriverName();
+                        $currentYear = (string) now()->year;
+                        $yearExpression = match ($driver) {
+                            'sqlite' => "strftime('%Y', application_date)",
+                            'pgsql' => 'EXTRACT(YEAR FROM application_date)::text',
+                            default => 'YEAR(application_date)',
+                        };
+
+                        $years = Applicant::query()
+                            ->whereNotNull('application_date')
+                            ->selectRaw("{$yearExpression} as year")
+                            ->distinct()
+                            ->pluck('year', 'year')
+                            ->filter()
+                            ->mapWithKeys(fn (mixed $year): array => [(string) $year => (string) $year])
+                            ->all();
+
+                        $years[$currentYear] ??= $currentYear;
+                        krsort($years);
+
+                        return $years;
+                    })
+                    ->query(function (Builder $query, array $data): void {
+                        $year = $data['value'] ?? null;
+
+                        if (blank($year)) {
+                            return;
+                        }
+
+                        $query->whereYear('application_date', (int) $year);
+                    }),
+            ])
+            ->recordUrl(fn($record) => route('filament.admin.resources.applicants.edit', $record))
+            ->bulkActions([
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
+                    // Export CSV Bulk Action
+                    Actions\BulkAction::make('exportCsv')
+                        ->label('Export as CSV')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->action(function (Collection $records) {
+                            // Generate CSV content
+                            $csvContent = $records->map(function ($record) {
+                                return [
+                                    'Name' => $record->name,
+                                    'Email' => $record->email,
+                                    'Phone' => $record->phone,
+                                    'DOB' => $record->dob?->format('Y-m-d'),
+                                    'Address' => $record->address,
+                                    'School' => $record->school,
+                                    'Saturday Club' => $record->saturday_club,
+                                    'Sunday Club' => $record->sunday_club,
+                                    'Previous Clubs' => $record->previous_clubs,
+                                    'Playing Experience' => $record->playing_experience,
+                                    'Preferred Position' => $record->preferred_position,
+                                    'Other Positions' => $record->other_positions,
+                                    'Preferred Foot' => $record->preferred_foot,
+                                    'Age Groups' => $record->age_groups,
+                                    'How Did You Hear' => $record->how_hear,
+                                    'Medical Conditions' => $record->medical_conditions,
+                                    'Injuries' => $record->injuries,
+                                    'Additional Info' => $record->additional_info,
+                                    'Application Date' => $record->application_date?->format('dd/mm/Y'),
+                                ];
+                            });
+
+                            // Create a temporary file for the CSV
+                            $fileName = 'applicants_export_' . now()->format('Y_m_d_H_i_s') . '.csv';
+                            $filePath = storage_path('app/' . $fileName);
+
+                            // Open the file and write the CSV content
+                            $file = fopen($filePath, 'w');
+                            fputcsv($file, array_keys($csvContent->first())); // Add headers
+                            foreach ($csvContent as $row) {
+                                fputcsv($file, $row);
+                            }
+                            fclose($file);
+                            Notification::make()
+                                ->title('Applicants CSV Exported')
+                                ->body('The selected applicant data has been exported as a CSV file and downloaded to your computer.')
+                                ->success()
+                                ->send();
+
+
+                            // Return the file as a download response
+                            return response()->download($filePath)->deleteFileAfterSend();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+                ]),
+            ])
+            ->defaultSort('name', 'asc');
+    }
+
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListApplicants::route('/'),
+            'create' => Pages\CreateApplicant::route('/create'),
+            'edit' => Pages\EditApplicant::route('/{record}/edit'),
+        ];
+    }
+}

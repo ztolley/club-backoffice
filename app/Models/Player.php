@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Models;
+
+use App\Traits\HasUuid;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
+class Player extends Model
+{
+    use HasFactory;
+    use HasUuid;
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'dob' => 'date',
+        'allowed_marketing' => 'boolean',
+        'signed_date' => 'date',
+    ];
+
+    public function team(): BelongsTo
+    {
+        return $this->belongsTo(Team::class);
+    }
+
+    public function alternateTeam()
+    {
+        return $this->belongsTo(Team::class, 'alternate_team_id');
+    }
+
+    public function contacts(): BelongsToMany
+    {
+        return $this->belongsToMany(Contact::class, 'contact_player')
+            ->withPivot('is_primary')
+            ->withTimestamps();
+    }
+}

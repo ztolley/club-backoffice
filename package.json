@@ -1,0 +1,19 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "test:e2e": "env -u NO_COLOR playwright test --grep-invert @ui-review",
+        "test:e2e:ui-review": "env -u NO_COLOR playwright test --grep @ui-review --output test-results/ui-review"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.59.0",
+        "@tailwindcss/vite": "4.2.2",
+        "axios": "1.14.0",
+        "concurrently": "9.2.1",
+        "laravel-vite-plugin": "3.0.1",
+        "tailwindcss": "4.2.2",
+        "vite": "8.0.3"
+    }
+}
