@@ -103,6 +103,8 @@ class ApplicantResource extends Resource
                 TextColumn::make('preferred_position')
                     ->searchable()
                     ->sortable()
+                    ->limit(30)
+                    ->tooltip(fn (?string $state): ?string => filled($state) ? $state : null)
                     ->toggleable(),
                 TextColumn::make('preferred_foot')
                     ->searchable()
