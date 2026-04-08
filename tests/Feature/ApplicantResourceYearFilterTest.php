@@ -9,6 +9,7 @@ use Database\Seeders\ShieldSeeder;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -56,6 +57,33 @@ class ApplicantResourceYearFilterTest extends TestCase
             ->assertCanNotSeeTableRecords([$currentYearApplicant, $secondCurrentYearApplicant])
             ->filterTable('application_year', '')
             ->assertCanSeeTableRecords([$currentYearApplicant, $secondCurrentYearApplicant, $previousYearApplicant]);
+    }
+
+    public function test_preferred_position_is_truncated_in_the_applicants_table_with_full_value_in_tooltip(): void
+    {
+        $admin = $this->seedAndGetAdmin();
+        $longPreferredPosition = 'Left wing / attacking midfielder / secondary striker rotation';
+
+        $applicant = Applicant::factory()->create([
+            'preferred_position' => $longPreferredPosition,
+        ]);
+
+        $this->withoutMiddleware();
+        Gate::before(static fn () => true);
+        $this->actingAs($admin);
+
+        Livewire::test(ListApplicants::class)
+            ->assertCanSeeTableRecords([$applicant])
+            ->assertTableColumnFormattedStateSet(
+                'preferred_position',
+                Str::limit($longPreferredPosition, 30),
+                $applicant,
+            )
+            ->assertTableColumnExists(
+                'preferred_position',
+                fn ($column): bool => $column->getTooltip($column->getState()) === $longPreferredPosition,
+                $applicant,
+            );
     }
 
     private function seedAndGetAdmin(): User
