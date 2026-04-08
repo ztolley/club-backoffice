@@ -23,7 +23,7 @@
         "laravel/pint": "1.29.0",
         "laravel/sail": "1.55.0",
         "mockery/mockery": "1.6.12",
-        "nunomaduro/collision": "8.9.2",
+        "nunomaduro/collision": "8.9.3",
         "phpunit/phpunit": "12.5.11"
     },
     "autoload": {
