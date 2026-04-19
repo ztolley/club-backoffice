@@ -123,6 +123,22 @@
                     </fieldset>
 
                     <fieldset>
+                        <legend>Partner Communications <span class="forms-required-label">*</span></legend>
+                        <div class="forms-field-checkbox">
+                            <input type="checkbox" id="partner_communications_agreement"
+                                name="partner_communications_agreement" value="1"
+                                {{ old('partner_communications_agreement') ? 'checked' : '' }} required>
+                            <label for="partner_communications_agreement">
+                                The Player (and Parent/Guardian where applicable) agrees that the Club and its
+                                selected leisure partners may contact them with relevant updates, offers, and
+                                opportunities related to the Club’s activities. Contact details will be shared only
+                                where necessary for this purpose and in accordance with applicable UK data protection
+                                laws. Consent can be withdrawn or preferences updated at any time.
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
                         <legend>Player Agreement <span class="forms-required-label">*</span></legend>
                         <div class="forms-field-checkbox">
                             <input type="checkbox" id="player_code_of_conduct_agreement"
@@ -165,9 +181,10 @@
 
             <p class="privacy-notice">
                 Your data will be stored securely on a private database accessible only to authorised Hartland Girls
-                Academy Officials. Your data will not be shared with any 3rd parties and used solely for the purpose of
-                managing your player and recording information and notes related to activities within Hartland Girls
-                Academy. If at any point you wish your data to be deleted please email a request to
+                Academy Officials. Except where you have agreed to partner communications above, your data will not be
+                shared with any 3rd parties and will be used solely for the purpose of managing your player and
+                recording information and notes related to activities within Hartland Girls Academy. If at any point you
+                wish your data to be deleted please email a request to
                 enquiries@hartlandgirlsacademy.co.uk and we will delete your data within 30 days.
             </p>
         </form>
