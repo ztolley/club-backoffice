@@ -45,6 +45,7 @@ class PublicPlayerSignupFormController extends Controller
     public function submit(Request $request)
     {
         $request->validate([
+            'partner_communications_agreement' => 'accepted',
             'player_code_of_conduct_agreement' => 'accepted',
             'parent_code_of_conduct_agreement' => 'accepted',
         ]);

@@ -186,6 +186,7 @@ export async function submitPublicPlayerSignup(
 
     await page.getByLabel(/player code of conduct/i).check();
     await page.getByLabel(/parent code of conduct/i).check();
+    await page.getByLabel(/selected leisure partners/i).check();
     await page.getByLabel(/participate visually in marketing materials/i).check();
 
     await page.getByRole('button', { name: /^submit$/i }).click();
