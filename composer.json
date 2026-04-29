@@ -12,7 +12,7 @@
         "jeffgreco13/filament-breezy": "3.2.5",
         "laravel/framework": "13.6.0",
         "laravel/tinker": "3.0.2",
-        "spatie/laravel-permission": "7.3.0",
+        "spatie/laravel-permission": "7.4.1",
         "symfony/dom-crawler": "8.0.8",
         "webklex/laravel-imap": "6.2.0"
     },
