@@ -8,7 +8,7 @@
         "test:e2e:ui-review": "env -u NO_COLOR playwright test --grep @ui-review --project=chromium --workers=1 --output test-results/ui-review"
     },
     "devDependencies": {
-        "@playwright/test": "^1.62.0",
+        "@playwright/test": "^1.62.1",
         "@tailwindcss/vite": "4.3.3",
         "axios": "1.18.1",
         "concurrently": "10.0.4",
