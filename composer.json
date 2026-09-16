@@ -20,7 +20,7 @@
         "fakerphp/faker": "1.24.1",
         "jasonmccreary/laravel-test-assertions": "2.9.0",
         "laravel/pail": "1.2.7",
-        "laravel/pint": "1.30.5",
+        "laravel/pint": "1.32.1",
         "laravel/sail": "1.67.0",
         "mockery/mockery": "1.6.15",
         "nunomaduro/collision": "8.9.5",
